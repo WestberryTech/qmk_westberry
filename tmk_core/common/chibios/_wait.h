@@ -56,7 +56,11 @@ void wait_us(uint16_t duration);
  * (A fairly large value of 0.25 microseconds is set.)
  */
 #ifndef GPIO_INPUT_PIN_DELAY
-#    define GPIO_INPUT_PIN_DELAY (CPU_CLOCK / 1000000L / 4)
+#    if defined(WB32_MAINCLK)
+#        define GPIO_INPUT_PIN_DELAY (WB32_MAINCLK / 1000000L / 4)
+#    else
+#        define GPIO_INPUT_PIN_DELAY (CPU_CLOCK / 1000000L / 4)
+#    endif
 #endif
 
 #define waitInputPinDelay() wait_cpuclock(GPIO_INPUT_PIN_DELAY)

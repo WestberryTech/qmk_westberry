@@ -77,6 +77,23 @@
 #    endif
 #endif
 
+#ifdef WB32F3G71xx
+#    ifndef WB32_I2CCONFIG
+#        define WB32_I2CCONFIG  {                                                                               \
+         .i2c_it = I2C_INTR_TX_EMPTY | I2C_INTR_TX_ABRT | I2C_INTR_STOP_DET | I2C_INTR_RX_FULL,                 \
+         .op_mode = I2C_CON_SLAVE_DISABLE | I2C_CON_RESTART_EN | I2C_CON_SPEED_STANDARD | I2C_CON_MASTER_MODE,  \
+         .target_address = 0,                                                                                   \
+         .tx_fifo_threshold = 0,                                                                                \
+         .rx_fifo_threshold = 0,                                                                                \
+         .ss_scl_hcnt = 373,                                                                                    \
+         .ss_scl_lcnt = 451,                                                                                    \
+         .fs_spklen = 4,                                                                                        \
+         .sda_setup = 24,                                                                                       \
+         .sda_hold = 29                                                                                         \
+         }
+#    endif
+#endif
+
 #ifndef I2C_DRIVER
 #    define I2C_DRIVER I2CD1
 #endif

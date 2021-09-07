@@ -95,6 +95,33 @@ void enter_bootloader_mode_if_requested(void) {
     }
 }
 
+#elif defined(WB32_BOOTLOADER_ADDRESS)  // WB32_BOOTLOADER_DUAL_BANK
+
+extern uint32_t __ram0_end__;
+
+__attribute__((weak)) void bootloader_jump(void) {
+    *MAGIC_ADDR = BOOTLOADER_MAGIC;  // set magic flag => reset handler will jump into boot loader
+    NVIC_SystemReset();
+    while (1)
+        ;
+}
+
+void enter_bootloader_mode_if_requested(void) {
+    unsigned long *check = MAGIC_ADDR;
+    if (*check == BOOTLOADER_MAGIC) {
+        *check = 0;
+        __set_CONTROL(0);
+        __set_MSP(*(__IO uint32_t *)WB32_BOOTLOADER_ADDRESS);
+        __enable_irq();
+
+        typedef void (*BootJump_t)(void);
+        BootJump_t boot_jump = *(BootJump_t *)(WB32_BOOTLOADER_ADDRESS + 4);
+        boot_jump();
+        while (1)
+            ;
+    }
+}
+
 #elif defined(KL2x) || defined(K20x) || defined(MK66F18) || defined(MIMXRT1062)  // STM32_BOOTLOADER_DUAL_BANK // STM32_BOOTLOADER_ADDRESS
 /* Kinetis */
 

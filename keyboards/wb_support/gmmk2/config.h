@@ -1,0 +1,32 @@
+#pragma once
+
+#include "config_common.h"
+
+// #define KEYBOARD_SHARED_EP TRUE
+
+#define EARLY_INIT_PERFORM_BOOTLOADER_JUMP TRUE
+
+// #define USB_SUSPEND_WAKEUP_DELAY 2000
+
+/* RGB */
+#define RGB_DISABLE_WHEN_USB_SUSPENDED TRUE
+
+/* SPI Config for LED Driver */
+#define RGB_MATRIX_MAXIMUM_BRIGHTNESS 175
+
+#define DRIVER_COUNT 2
+#define DRIVER_1_LED_TOTAL 66
+#define DRIVER_2_LED_TOTAL 54
+#define DRIVER_LED_TOTAL (DRIVER_1_LED_TOTAL + DRIVER_2_LED_TOTAL)
+
+#define DRIVER_1_CS A15
+#define DRIVER_2_CS B15
+#define DRIVER_1_EN C13
+#define DRIVER_2_EN C13
+
+#define SPI_DRIVER SPIDQ
+#define SPI_SCK_PIN A5
+#define SPI_MOSI_PIN A7
+#define SPI_MISO_PIN A6
+
+

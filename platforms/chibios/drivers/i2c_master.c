@@ -31,6 +31,9 @@
 
 static uint8_t i2c_address;
 
+#if defined(WB32F3G71xx)
+static const I2CConfig i2cconfig = WB32_I2CCONFIG;
+#else
 static const I2CConfig i2cconfig = {
 #if defined(USE_I2CV1_CONTRIB)
     I2C1_CLOCK_SPEED,
@@ -44,6 +47,7 @@ static const I2CConfig i2cconfig = {
     STM32_TIMINGR_PRESC(I2C1_TIMINGR_PRESC) | STM32_TIMINGR_SCLDEL(I2C1_TIMINGR_SCLDEL) | STM32_TIMINGR_SDADEL(I2C1_TIMINGR_SDADEL) | STM32_TIMINGR_SCLH(I2C1_TIMINGR_SCLH) | STM32_TIMINGR_SCLL(I2C1_TIMINGR_SCLL), 0, 0
 #endif
 };
+#endif
 
 static i2c_status_t chibios_to_qmk(const msg_t* status) {
     switch (*status) {
@@ -67,12 +71,17 @@ __attribute__((weak)) void i2c_init(void) {
         palSetPadMode(I2C1_SDA_BANK, I2C1_SDA, PAL_MODE_INPUT);
 
         chThdSleepMilliseconds(10);
-#if defined(USE_GPIOV1)
+#if defined(WB32F3G71xx)
+        palSetPadMode(I2C1_SCL_BANK, I2C1_SCL, PAL_MODE_ALTERNATE(I2C1_SCL_PAL_MODE) |PAL_WB32_OTYPE_OPENDRAIN);
+        palSetPadMode(I2C1_SDA_BANK, I2C1_SDA, PAL_MODE_ALTERNATE(I2C1_SDA_PAL_MODE) |PAL_WB32_OTYPE_OPENDRAIN);
+#else
+#    if defined(USE_GPIOV1)
         palSetPadMode(I2C1_SCL_BANK, I2C1_SCL, I2C1_SCL_PAL_MODE);
         palSetPadMode(I2C1_SDA_BANK, I2C1_SDA, I2C1_SDA_PAL_MODE);
-#else
+#    else
         palSetPadMode(I2C1_SCL_BANK, I2C1_SCL, PAL_MODE_ALTERNATE(I2C1_SCL_PAL_MODE) | PAL_STM32_OTYPE_OPENDRAIN);
         palSetPadMode(I2C1_SDA_BANK, I2C1_SDA, PAL_MODE_ALTERNATE(I2C1_SDA_PAL_MODE) | PAL_STM32_OTYPE_OPENDRAIN);
+#    endif
 #endif
     }
 }

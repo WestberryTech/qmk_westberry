@@ -37,18 +37,71 @@ __attribute__((weak)) void spi_init(void) {
         setPinInput(SPI_MISO_PIN);
 
         chThdSleepMilliseconds(10);
-#if defined(USE_GPIOV1)
+#if defined(WB32F3G71xx)
+        palSetPadMode(PAL_PORT(SPI_SCK_PIN),  PAL_PAD(SPI_SCK_PIN),  PAL_MODE_ALTERNATE(SPI_SCK_PAL_MODE) | PAL_WB32_OTYPE_PUSHPULL | PAL_WB32_OSPEED_HIGH);
+        palSetPadMode(PAL_PORT(SPI_MOSI_PIN), PAL_PAD(SPI_MOSI_PIN), PAL_MODE_ALTERNATE(SPI_SCK_PAL_MODE) | PAL_WB32_OTYPE_PUSHPULL | PAL_WB32_OSPEED_HIGH);
+        palSetPadMode(PAL_PORT(SPI_MISO_PIN), PAL_PAD(SPI_MISO_PIN), PAL_MODE_ALTERNATE(SPI_SCK_PAL_MODE) | PAL_WB32_OTYPE_PUSHPULL | PAL_WB32_OSPEED_HIGH);
+#else
+#    if defined(USE_GPIOV1)
         palSetPadMode(PAL_PORT(SPI_SCK_PIN), PAL_PAD(SPI_SCK_PIN), SPI_SCK_PAL_MODE);
         palSetPadMode(PAL_PORT(SPI_MOSI_PIN), PAL_PAD(SPI_MOSI_PIN), SPI_MOSI_PAL_MODE);
         palSetPadMode(PAL_PORT(SPI_MISO_PIN), PAL_PAD(SPI_MISO_PIN), SPI_MISO_PAL_MODE);
-#else
+#    else
         palSetPadMode(PAL_PORT(SPI_SCK_PIN), PAL_PAD(SPI_SCK_PIN), PAL_MODE_ALTERNATE(SPI_SCK_PAL_MODE) | PAL_STM32_OTYPE_PUSHPULL | PAL_STM32_OSPEED_HIGHEST);
         palSetPadMode(PAL_PORT(SPI_MOSI_PIN), PAL_PAD(SPI_MOSI_PIN), PAL_MODE_ALTERNATE(SPI_MOSI_PAL_MODE) | PAL_STM32_OTYPE_PUSHPULL | PAL_STM32_OSPEED_HIGHEST);
         palSetPadMode(PAL_PORT(SPI_MISO_PIN), PAL_PAD(SPI_MISO_PIN), PAL_MODE_ALTERNATE(SPI_MISO_PAL_MODE) | PAL_STM32_OTYPE_PUSHPULL | PAL_STM32_OSPEED_HIGHEST);
+#    endif
 #endif
     }
 }
 
+#if defined(WB32F3G71xx)
+bool spi_start(pin_t slavePin, bool lsbFirst, uint8_t mode, uint16_t divisor) {
+
+    if (currentSlavePin != NO_PIN || slavePin == NO_PIN) {
+        return false;
+    }
+
+    if (!lsbFirst) {
+        osalDbgAssert(lsbFirst != FALSE, "unsupported lsbFirst");
+    }
+
+    if (divisor < 1) {
+        return false;
+    }
+
+    spiConfig.SPI_BaudRatePrescaler = (divisor << 2);
+
+    switch (mode) {
+        case 0:
+            spiConfig.SPI_CPHA = SPI_CPHA_1Edge;
+            spiConfig.SPI_CPOL = SPI_CPOL_Low;
+            break;
+        case 1:
+            spiConfig.SPI_CPHA = SPI_CPHA_2Edge;
+            spiConfig.SPI_CPOL = SPI_CPOL_Low;
+            break;
+        case 2:
+            spiConfig.SPI_CPHA = SPI_CPHA_1Edge;
+            spiConfig.SPI_CPOL = SPI_CPOL_High;
+            break;
+        case 3:
+            spiConfig.SPI_CPHA = SPI_CPHA_2Edge;
+            spiConfig.SPI_CPOL = SPI_CPOL_High;
+            break;
+    }
+
+    currentSlavePin  = slavePin;
+    spiConfig.ssport = PAL_PORT(slavePin);
+    spiConfig.sspad  = PAL_PAD(slavePin);
+
+    setPinOutput(slavePin);
+    spiStart(&SPI_DRIVER, &spiConfig);
+    spiSelect(&SPI_DRIVER);
+
+    return true;
+}
+#else
 bool spi_start(pin_t slavePin, bool lsbFirst, uint8_t mode, uint16_t divisor) {
     if (currentSlavePin != NO_PIN || slavePin == NO_PIN) {
         return false;
@@ -168,6 +221,7 @@ bool spi_start(pin_t slavePin, bool lsbFirst, uint8_t mode, uint16_t divisor) {
 
     return true;
 }
+#endif
 
 spi_status_t spi_write(uint8_t data) {
     uint8_t rxData;
