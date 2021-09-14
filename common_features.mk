@@ -187,6 +187,10 @@ else
         COMMON_VPATH += $(DRIVER_PATH)/eeprom
         COMMON_VPATH += $(PLATFORM_PATH)/$(PLATFORM_KEY)/$(DRIVER_DIR)/eeprom
         SRC += eeprom_driver.c eeprom_stm32_L0_L1.c
+      else ifeq ($(MCU_SERIES), WB32F3G71xx)
+        SRC += $(PLATFORM_COMMON_DIR)/eeprom_wb32.c
+        OPT_DEFS += -DEEPROM_EMU_WB32F3G71x9
+        OPT_DEFS += -DWB32_EEPROM_ENABLE
       else
         # This will effectively work the same as "transient" if not supported by the chip
         SRC += $(PLATFORM_COMMON_DIR)/eeprom_teensy.c

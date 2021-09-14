@@ -62,6 +62,9 @@ def check_udev_rules():
             _udev_rule("1eaf", "0003"),  # STM32duino
             _udev_rule("0483", "df11")  # STM32 DFU
         },
+        'wb32': {
+            _udev_rule("342d", "dfa0"),  # WB32 DFU
+        },
         'bootloadhid': {_udev_rule("16c0", "05df")},
         'usbasploader': {_udev_rule("16c0", "05dc")},
         'massdrop': {_udev_rule("03eb", "6124", 'ENV{ID_MM_DEVICE_IGNORE}="1"')},

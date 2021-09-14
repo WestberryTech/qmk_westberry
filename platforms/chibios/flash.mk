@@ -23,6 +23,10 @@ define EXEC_DFU_UTIL
 	$(DFU_UTIL) $(DFU_ARGS) -D $(BUILD_DIR)/$(TARGET).bin
 endef
 
+define EXEC_DFU_FW_UPDATER
+	DfuFwUpdater_cli -D $(BUILD_DIR)/$(TARGET).bin
+endef
+
 dfu-util: $(BUILD_DIR)/$(TARGET).bin cpfirmware sizeafter
 	$(call EXEC_DFU_UTIL)
 
@@ -82,6 +86,8 @@ else ifeq ($(strip $(MCU_FAMILY)),MIMXRT1062)
 	$(UNSYNC_OUTPUT_CMD) && $(call EXEC_TEENSY)
 else ifeq ($(strip $(MCU_FAMILY)),STM32)
 	$(UNSYNC_OUTPUT_CMD) && $(call EXEC_DFU_UTIL)
+else ifeq ($(strip $(MCU_FAMILY)),WB32)
+	$(UNSYNC_OUTPUT_CMD) && $(call EXEC_DFU_FW_UPDATER)
 else
 	$(PRINT_OK); $(SILENT) || printf "$(MSG_FLASH_BOOTLOADER)"
 endif

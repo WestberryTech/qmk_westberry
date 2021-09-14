@@ -125,6 +125,13 @@ ifeq ($(strip $(BOOTLOADER)), apm32-dfu)
     DFU_ARGS ?= -d 314B:0106 -a 0 -s 0x08000000:leave
     DFU_SUFFIX_ARGS ?= -v 314B -p 0106
 endif
+ifeq ($(strip $(BOOTLOADER)), wb32-dfu)
+    OPT_DEFS += -DBOOTLOADER_WB32_DFU
+
+    # Options to pass to dfu-util when flashing
+    DFU_ARGS ?= -d 342D:DFA0 -a 0 -s 0x08000000:leave
+    DFU_SUFFIX_ARGS ?= -v 342D -p DFA0
+endif
 ifeq ($(strip $(BOOTLOADER)), kiibohd)
     OPT_DEFS += -DBOOTLOADER_KIIBOHD
     ifeq ($(strip $(MCU_ORIG)), MK20DX128)

@@ -18,7 +18,11 @@
 
 #include "quantum.h"
 
+#if defined(WB32F3G71xx)
+static SerialConfig serialConfig = {SERIAL_DEFAULT_BITRATE, SD1_WRDLEN, SD1_STPBIT, SD1_PARITY, SD1_ATFLCT};
+#else
 static SerialConfig serialConfig = {SERIAL_DEFAULT_BITRATE, SD1_CR1, SD1_CR2, SD1_CR3};
+#endif
 
 void uart_init(uint32_t baud) {
     static bool is_initialised = false;
@@ -28,12 +32,17 @@ void uart_init(uint32_t baud) {
 
         serialConfig.speed = baud;
 
-#if defined(USE_GPIOV1)
+#if defined(WB32F3G71xx)
+        palSetLineMode(SD1_TX_PIN, PAL_MODE_ALTERNATE(SD1_TX_PAL_MODE) | PAL_WB32_PUPDR_PULLUP);
+        palSetLineMode(SD1_RX_PIN, PAL_MODE_ALTERNATE(SD1_TX_PAL_MODE) | PAL_WB32_PUPDR_PULLUP);
+#else
+#    if defined(USE_GPIOV1)
         palSetLineMode(SD1_TX_PIN, PAL_MODE_STM32_ALTERNATE_OPENDRAIN);
         palSetLineMode(SD1_RX_PIN, PAL_MODE_STM32_ALTERNATE_OPENDRAIN);
-#else
+#    else
         palSetLineMode(SD1_TX_PIN, PAL_MODE_ALTERNATE(SD1_TX_PAL_MODE) | PAL_STM32_OTYPE_OPENDRAIN);
         palSetLineMode(SD1_RX_PIN, PAL_MODE_ALTERNATE(SD1_RX_PAL_MODE) | PAL_STM32_OTYPE_OPENDRAIN);
+#    endif
 #endif
         sdStart(&SERIAL_DRIVER, &serialConfig);
     }
