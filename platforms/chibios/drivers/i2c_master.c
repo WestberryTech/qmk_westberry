@@ -31,9 +31,6 @@
 
 static uint8_t i2c_address;
 
-#if defined(WB32F3G71xx)
-static const I2CConfig i2cconfig = WB32_I2CCONFIG;
-#else
 static const I2CConfig i2cconfig = {
 #if defined(USE_I2CV1_CONTRIB)
     I2C1_CLOCK_SPEED,
@@ -41,13 +38,15 @@ static const I2CConfig i2cconfig = {
     I2C1_OPMODE,
     I2C1_CLOCK_SPEED,
     I2C1_DUTY_CYCLE,
+#elif defined(WB32F3G71xx)
+    I2C1_OPMODE,
+    I2C1_CLOCK_SPEED
 #else
     // This configures the I2C clock to 400khz assuming a 72Mhz clock
     // For more info : https://www.st.com/en/embedded-software/stsw-stm32126.html
     STM32_TIMINGR_PRESC(I2C1_TIMINGR_PRESC) | STM32_TIMINGR_SCLDEL(I2C1_TIMINGR_SCLDEL) | STM32_TIMINGR_SDADEL(I2C1_TIMINGR_SDADEL) | STM32_TIMINGR_SCLH(I2C1_TIMINGR_SCLH) | STM32_TIMINGR_SCLL(I2C1_TIMINGR_SCLL), 0, 0
 #endif
 };
-#endif
 
 static i2c_status_t chibios_to_qmk(const msg_t* status) {
     switch (*status) {
