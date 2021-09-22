@@ -24,6 +24,15 @@ define EXEC_DFU_UTIL
 endef
 
 define EXEC_DFU_FW_UPDATER
+	if ! DfuFwUpdater_cli -l | grep -q "Found DFU"; then \
+		printf "$(MSG_BOOTLOADER_NOT_FOUND_QUICK_RETRY)" ;\
+		sleep $(BOOTLOADER_RETRY_TIME) ;\
+		while ! DfuFwUpdater_cli -l | grep -q "Found DFU"; do \
+			printf "." ;\
+			sleep $(BOOTLOADER_RETRY_TIME) ;\
+		done ;\
+		printf "\n" ;\
+	fi
 	DfuFwUpdater_cli -D $(BUILD_DIR)/$(TARGET).bin
 endef
 

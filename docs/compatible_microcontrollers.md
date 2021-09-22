@@ -39,7 +39,7 @@ You can also use any ARM chip with USB that [ChibiOS](https://www.chibios.org) s
  
 ### WestBerryTech (WB32)
 
- * [WB32F3G71xx](http://westberrytech.com)
+ * [WB32F3G71xx](http://www.westberrytech.com)
 
 ### NXP (Kinetis)
 
