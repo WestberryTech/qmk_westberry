@@ -9,22 +9,28 @@
         "**/*.bin": true
     },
     "files.associations": {
-        "*.h": "c",
-        "*.c": "c",
-        "*.inc": "c",
-        "*.cpp": "cpp",
-        "*.hpp": "cpp",
-        "xstddef": "c",
-        "type_traits": "c",
-        "utility": "c",
-        "ranges": "c"
+      "*.h": "c",
+      "*.c": "c",
+      "*.inc": "c",
+      "*.cpp": "cpp",
+      "*.hpp": "cpp",
+      "xstddef": "c",
+      "type_traits": "c",
+      "utility": "c",
+      "ranges": "c",
+      "chrono": "c",
+      "random": "c",
+      "limits": "c"
     },
     "[markdown]": {
         "editor.trimAutoWhitespace": false,
         "files.trimTrailingWhitespace": false
     },
+    "cortex-debug.JLinkGDBServerPath": "C:/Program Files (x86)/SEGGER/JLink_V614b/JLinkGDBServerCL.exe",
     "python.formatting.provider": "yapf",
     "[json]": {
 	    "editor.formatOnSave": false
-    }
+    },
+    "cortex-debug.registerUseNaturalFormat": false,
+    "C_Cpp.dimInactiveRegions": false
 }
