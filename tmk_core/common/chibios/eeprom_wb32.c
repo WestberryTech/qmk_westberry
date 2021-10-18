@@ -16,7 +16,16 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
+#include "util.h"
+#include "debug.h"
 #include "eeprom_wb32.h"
+
+#include "eeprom_wb32_defs.h"
+#if !defined(FEE_PAGE_SIZE) || !defined(FEE_PAGE_COUNT) || !defined(FEE_MCU_FLASH_SIZE) || !defined(FEE_PAGE_BASE_ADDRESS)
+#    error "not implemented."
+#endif
+
 /*****************************************************************************
  * Allows to use the internal flash to store non volatile data. To initialize
  * the functionality use the EEPROM_Init() function. Be sure that by reprogramming
@@ -154,7 +163,7 @@ void EEPROM_Erase(void) {
     do {
         FMC_ErasePage(FEE_PAGE_BASE_ADDRESS + (page_num * FEE_PAGE_SIZE));
         page_num++;
-    } while (page_num < FEE_DENSITY_PAGES);
+    } while (page_num < FEE_PAGE_COUNT);
 }
 
 /*****************************************************************************
@@ -174,7 +183,7 @@ void WBFLASH_Read(uint32_t ReadAddr, uint8_t *pBuffer, uint16_t NumToRead) {
  *  the manipulated buffer written after PageErase.
  *******************************************************************************/
 uint8_t  wb_flash_buffer[FEE_PAGE_SIZE] = {0};
-uint16_t EEPROM_WriteDataByte(uint16_t Address, uint8_t DataByte) {
+uint8_t EEPROM_WriteDataByte(uint16_t Address, uint8_t DataByte) {
     FLASH_Status FlashStatus = FLASH_COMPLETE;
     uint32_t     raw_address;
     uint32_t     pagpos;
@@ -218,62 +227,20 @@ uint8_t EEPROM_ReadDataByte(uint16_t Address) {
 }
 
 /*****************************************************************************
- *  Wrap library in AVR style functions.
+ *  Bind to eeprom_driver.c
  *******************************************************************************/
-uint8_t eeprom_read_byte(const uint8_t *Address) {
+void eeprom_driver_init(void) { EEPROM_Init(); }
+
+void eeprom_driver_erase(void) { EEPROM_Erase(); }
+
+static uint8_t eeprom_read_byte(const uint8_t *Address) {
     const uint16_t p = (const uint32_t)Address;
     return EEPROM_ReadDataByte(p);
 }
 
-void eeprom_write_byte(uint8_t *Address, uint8_t Value) {
+static void eeprom_write_byte(uint8_t *Address, uint8_t Value) {
     uint16_t p = (uint32_t)Address;
     EEPROM_WriteDataByte(p, Value);
-}
-
-void eeprom_update_byte(uint8_t *Address, uint8_t Value) {
-    uint16_t p = (uint32_t)Address;
-    EEPROM_WriteDataByte(p, Value);
-}
-
-uint16_t eeprom_read_word(const uint16_t *Address) {
-    const uint16_t p = (const uint32_t)Address;
-    return EEPROM_ReadDataByte(p) | (EEPROM_ReadDataByte(p + 1) << 8);
-}
-
-void eeprom_write_word(uint16_t *Address, uint16_t Value) {
-    uint16_t p = (uint32_t)Address;
-    EEPROM_WriteDataByte(p, (uint8_t)Value);
-    EEPROM_WriteDataByte(p + 1, (uint8_t)(Value >> 8));
-}
-
-void eeprom_update_word(uint16_t *Address, uint16_t Value) {
-    uint16_t p = (uint32_t)Address;
-    EEPROM_WriteDataByte(p, (uint8_t)Value);
-    EEPROM_WriteDataByte(p + 1, (uint8_t)(Value >> 8));
-}
-
-uint32_t eeprom_read_dword(const uint32_t *Address) {
-    const uint16_t p = (const uint32_t)Address;
-    return EEPROM_ReadDataByte(p) | (EEPROM_ReadDataByte(p + 1) << 8) | (EEPROM_ReadDataByte(p + 2) << 16) | (EEPROM_ReadDataByte(p + 3) << 24);
-}
-
-void eeprom_write_dword(uint32_t *Address, uint32_t Value) {
-    uint16_t p = (const uint32_t)Address;
-    EEPROM_WriteDataByte(p, (uint8_t)Value);
-    EEPROM_WriteDataByte(p + 1, (uint8_t)(Value >> 8));
-    EEPROM_WriteDataByte(p + 2, (uint8_t)(Value >> 16));
-    EEPROM_WriteDataByte(p + 3, (uint8_t)(Value >> 24));
-}
-
-void eeprom_update_dword(uint32_t *Address, uint32_t Value) {
-    uint16_t p             = (const uint32_t)Address;
-    uint32_t existingValue = EEPROM_ReadDataByte(p) | (EEPROM_ReadDataByte(p + 1) << 8) | (EEPROM_ReadDataByte(p + 2) << 16) | (EEPROM_ReadDataByte(p + 3) << 24);
-    if (Value != existingValue) {
-        EEPROM_WriteDataByte(p, (uint8_t)Value);
-        EEPROM_WriteDataByte(p + 1, (uint8_t)(Value >> 8));
-        EEPROM_WriteDataByte(p + 2, (uint8_t)(Value >> 16));
-        EEPROM_WriteDataByte(p + 3, (uint8_t)(Value >> 24));
-    }
 }
 
 void eeprom_read_block(void *buf, const void *addr, size_t len) {
@@ -285,14 +252,6 @@ void eeprom_read_block(void *buf, const void *addr, size_t len) {
 }
 
 void eeprom_write_block(const void *buf, void *addr, size_t len) {
-    uint8_t *      p   = (uint8_t *)addr;
-    const uint8_t *src = (const uint8_t *)buf;
-    while (len--) {
-        eeprom_write_byte(p++, *src++);
-    }
-}
-
-void eeprom_update_block(const void *buf, void *addr, size_t len) {
     uint8_t *      p   = (uint8_t *)addr;
     const uint8_t *src = (const uint8_t *)buf;
     while (len--) {

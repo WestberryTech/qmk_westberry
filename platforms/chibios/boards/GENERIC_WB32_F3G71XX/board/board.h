@@ -34,7 +34,7 @@
 /*
  * Board identifier.
  */
-
+#define WB32F3G71x9
 #if !defined(WB32F3G71xx)
   #define WB32F3G71xx
 #endif

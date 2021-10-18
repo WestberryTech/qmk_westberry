@@ -156,7 +156,6 @@ else
         SRC += eeprom_stm32_L0_L1.c
       else ifeq ($(MCU_SERIES), WB32F3G71xx)
         OPT_DEFS += -DEEPROM_DRIVER
-        OPT_DEFS += -DEEPROM_EMU_WB32F3G71x9
         COMMON_VPATH += $(DRIVER_PATH)/eeprom
         SRC += eeprom_driver.c
         SRC += $(PLATFORM_COMMON_DIR)/eeprom_wb32.c

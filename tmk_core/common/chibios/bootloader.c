@@ -120,6 +120,7 @@ void enter_bootloader_mode_if_requested(void) {
         while (1)
             ;
     }
+}
 
 #elif defined(GD32VF103)
 
