@@ -160,7 +160,7 @@ void EEPROM_Erase(void) {
 /*****************************************************************************
  *  Read flash data.
  ******************************************************************************/
-void WBFLASH_Read(uint32_t ReadAddr, uint8_t* pBuffer, uint16_t NumToRead) {
+void WBFLASH_Read(uint32_t ReadAddr, uint8_t *pBuffer, uint16_t NumToRead) {
     uint16_t i;
 
     for (i = 0; i < NumToRead; i++) {
