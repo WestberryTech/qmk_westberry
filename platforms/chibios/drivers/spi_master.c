@@ -38,7 +38,7 @@ __attribute__((weak)) void spi_init(void) {
 
         chThdSleepMilliseconds(10);
 #if defined(WB32F3G71xx)
-        palSetPadMode(PAL_PORT(SPI_SCK_PIN),  PAL_PAD(SPI_SCK_PIN),  PAL_MODE_ALTERNATE(SPI_SCK_PAL_MODE) | PAL_WB32_OTYPE_PUSHPULL | PAL_WB32_OSPEED_HIGH);
+        palSetPadMode(PAL_PORT(SPI_SCK_PIN),  PAL_PAD(SPI_SCK_PIN), PAL_MODE_ALTERNATE(SPI_SCK_PAL_MODE) | PAL_WB32_OTYPE_PUSHPULL | PAL_WB32_OSPEED_HIGH);
         palSetPadMode(PAL_PORT(SPI_MOSI_PIN), PAL_PAD(SPI_MOSI_PIN), PAL_MODE_ALTERNATE(SPI_SCK_PAL_MODE) | PAL_WB32_OTYPE_PUSHPULL | PAL_WB32_OSPEED_HIGH);
         palSetPadMode(PAL_PORT(SPI_MISO_PIN), PAL_PAD(SPI_MISO_PIN), PAL_MODE_ALTERNATE(SPI_SCK_PAL_MODE) | PAL_WB32_OTYPE_PUSHPULL | PAL_WB32_OSPEED_HIGH);
 #else
@@ -57,7 +57,6 @@ __attribute__((weak)) void spi_init(void) {
 
 #if defined(WB32F3G71xx)
 bool spi_start(pin_t slavePin, bool lsbFirst, uint8_t mode, uint16_t divisor) {
-
     if (currentSlavePin != NO_PIN || slavePin == NO_PIN) {
         return false;
     }
@@ -116,7 +115,7 @@ bool spi_start(pin_t slavePin, bool lsbFirst, uint8_t mode, uint16_t divisor) {
         return false;
     }
 
-#if defined(K20x) || defined(KL2x)
+#    if defined(K20x) || defined(KL2x)
     spiConfig.tar0 = SPIx_CTARn_FMSZ(7) | SPIx_CTARn_ASC(1);
 
     if (lsbFirst) {
@@ -163,7 +162,7 @@ bool spi_start(pin_t slavePin, bool lsbFirst, uint8_t mode, uint16_t divisor) {
             spiConfig.tar0 |= SPIx_CTARn_BR(8);
             break;
     }
-#else
+#    else
     spiConfig.cr1 = 0;
 
     if (lsbFirst) {
@@ -209,7 +208,7 @@ bool spi_start(pin_t slavePin, bool lsbFirst, uint8_t mode, uint16_t divisor) {
             spiConfig.cr1 |= SPI_CR1_BR_2 | SPI_CR1_BR_1 | SPI_CR1_BR_0;
             break;
     }
-#endif
+#    endif
 
     currentSlavePin  = slavePin;
     spiConfig.ssport = PAL_PORT(slavePin);
