@@ -2,9 +2,8 @@
   "manufacturer": "WestBerry",
   "keyboard_name": "WestBerry for gsky",
   "maintainer": "Joy",
-  "height": 6,
-  "width": 19.5,
   "debounce": 5,
+  "processor": "WB32F3G71",
   "diode_direction": "COL2ROW",
   "matrix_pins": {
     "cols": ["B0", "B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B9", "B10", "B11", "B12", "B13"],
@@ -16,12 +15,11 @@
     "vid": "0x342D"
   },
   "layout_aliases": {
-    "KEYMAP": "LAYOUT_96_per",
-    "LAYOUT": "LAYOUT_96_per"
+    "KEYMAP": "LAYOUT_all",
+    "LAYOUT": "LAYOUT_all"
   },
   "layouts": {
-    "LAYOUT_96_per": {
-      "key_count": 100,
+    "LAYOUT_all": {
       "layout": [
         { "label": "ESC", "matrix": [0, 0], "w": 1, "x": 0, "y": 0 },
         { "label": "F1", "matrix": [0, 1], "w": 1, "x": 1.25, "y": 0 },
@@ -91,7 +89,7 @@
         { "label": "K", "matrix": [3, 8], "w": 1, "x": 8.75, "y": 3 },
         { "label": "L", "matrix": [3,9], "w": 1, "x": 9.75, "y": 3 },
         { "label": ";", "matrix": [3, 10], "w": 1, "x": 10.75, "y": 3 },
-        { "label": "\'", "matrix": [3, 11], "w": 1, "x": 11.75, "y": 3 },
+        { "label": "'", "matrix": [3, 11], "w": 1, "x": 11.75, "y": 3 },
         { "label": "#", "matrix": [3, 12], "w": 1, "x": 12.75, "y": 3 },
         { "label": "4", "matrix": [7, 10], "w": 1, "x": 15.5, "y": 3 },
         { "label": "5", "matrix": [7, 11], "w": 1, "x": 16.5, "y": 3 },
@@ -125,9 +123,9 @@
         { "label": "CTRL", "matrix": [5, 12], "w": 1, "x": 12, "y": 5 },
         { "label": "LEFT", "matrix": [7, 0], "w": 1, "x": 13.25, "y": 5 },
         { "label": "Down", "matrix": [7, 2], "w": 1, "x": 14.25, "y": 5 },
-        { "label": "Right", "matrix": [7, 3], "w": 1, "x": 15.25, "y": 5 }
+        { "label": "Right", "matrix": [7, 3], "w": 1, "x": 15.25, "y": 5 },
         { "label": "0", "matrix": [7, 4], "w": 1, "x": 16.5, "y": 5 },
-        { "label": ".", "matrix": [7, 5], "w": 1, "x": 17.5, "y": 5 },
+        { "label": ".", "matrix": [7, 5], "w": 1, "x": 17.5, "y": 5 }
       ]
     }
   }
