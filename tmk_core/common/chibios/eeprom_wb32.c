@@ -84,9 +84,9 @@ static uint32_t FLASH_OP_EXEC(uint32_t op) {
     FMC->CON = 0x005F0000;
 
     if (FMC->STAT & FMC_STAT_ERR)
-        return 1;   /* Any error occur */
+        return 1; /* Any error occur */
     else
-        return 0;   /* FLASH operation complete */
+        return 0; /* FLASH operation complete */
 }
 
 /*****************************************************************************
