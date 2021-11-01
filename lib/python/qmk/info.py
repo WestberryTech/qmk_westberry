@@ -99,6 +99,12 @@ def info_json(keyboard):
     # Check that the reported matrix size is consistent with the actual matrix size
     _check_matrix(info_data)
 
+    # Remove newline characters from layout labels
+    for layout_name, layout_json in layouts.items():
+        for key in layout_json['layout']:
+            if '\n' in key['label']:
+                key['label'] = key['label'].split('\n')[0]
+
     return info_data
 
 
@@ -111,11 +117,6 @@ def _extract_features(info_data, rules):
         del rules['BOOTMAGIC_ENABLE']
     if rules.get('BOOTMAGIC_ENABLE') == 'full':
         rules['BOOTMAGIC_ENABLE'] = 'on'
-
-    # Skip non-boolean features we haven't implemented special handling for
-    for feature in ('HAPTIC_ENABLE',):
-        if rules.get(feature):
-            del rules[feature]
 
     # Process the rest of the rules as booleans
     for key, value in rules.items():
