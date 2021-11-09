@@ -182,7 +182,7 @@ void WBFLASH_Read(uint32_t ReadAddr, uint8_t *pBuffer, uint16_t NumToRead) {
  *  written, the whole page must be copied to a buffer, the byte changed and
  *  the manipulated buffer written after PageErase.
  *******************************************************************************/
-uint8_t  wb_flash_buffer[FEE_PAGE_SIZE] = {0};
+uint8_t wb_flash_buffer[FEE_PAGE_SIZE] = {0};
 uint8_t EEPROM_WriteDataByte(uint16_t Address, uint8_t DataByte) {
     FLASH_Status FlashStatus = FLASH_COMPLETE;
     uint32_t     raw_address;
