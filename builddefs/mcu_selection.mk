@@ -694,8 +694,4 @@ ifneq ($(findstring WB32F3G71, $(MCU)),)
   BOARD ?= GENERIC_WB32_F3G71XX
 
   USE_FPU ?= no
-
-  # Options to pass to dfu-util when flashing
-  DFU_ARGS ?= -d 342D:DFA0 -a 0 -s 0x08000000:leave
-  DFU_SUFFIX_ARGS ?= -v 342D -p DFA0
 endif
