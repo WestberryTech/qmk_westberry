@@ -19,7 +19,6 @@
 #include "config_common.h"
 
 #define EARLY_INIT_PERFORM_BOOTLOADER_JUMP TRUE
-#define RGB_DISABLE_WHEN_USB_SUSPENDED TRUE
 #define SPI_FLASH_SLAVE_SELECT_PIN B12
 
 /* USB Device descriptor parameter */
