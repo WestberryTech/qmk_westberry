@@ -19,7 +19,8 @@
 #include "config_common.h"
 
 #define EARLY_INIT_PERFORM_BOOTLOADER_JUMP TRUE
-#define SPI_FLASH_SLAVE_SELECT_PIN B12
+#define EXTERNAL_FLASH_SPI_SLAVE_SELECT_PIN B12
+#define EXTERNAL_FLASH_SIZE 8
 
 /* USB Device descriptor parameter */
 #define DEVICE_VER 0x0001

@@ -22,4 +22,3 @@ AUDIO_ENABLE = no           # Audio output
 ENCODER_ENABLE = yes
 RGB_MATRIX_ENABLE = yes
 RGB_MATRIX_DRIVER = AW20216
-EEPROM_DRIVER = spi_flash

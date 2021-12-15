@@ -618,7 +618,7 @@ uint16_t EEPROM_ReadDataWord(uint16_t Address) {
  *  Bind to eeprom_driver.c
  *******************************************************************************/
 void eeprom_driver_init(void) {
-    spi_init();
+    flash_init();
     EEPROM_Init();
 }
 
