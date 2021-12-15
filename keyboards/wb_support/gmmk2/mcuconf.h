@@ -26,4 +26,5 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #undef WB32_SPI_USE_QSPI
 #define WB32_SPI_USE_QSPI TRUE
 
-
+#undef WB32_SPI_USE_SPIM2
+#define WB32_SPI_USE_SPIM2 TRUE

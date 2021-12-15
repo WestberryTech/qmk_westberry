@@ -22,8 +22,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "wait.h"
 #include "timer.h"
 #include "eeprom.h"
-#include "spi_master.h"
 #include "flash_spi.h"
+#include "wb32_spi_master.h"
 
 /*
  * We emulate eeprom by writing a snapshot compacted view of eeprom contents,
@@ -46,18 +46,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * The size of the 'compacted' area is equal to the size of the 'emulated' eeprom.
  * The size of the compacted-area and write log are configurable, and the combined
- * size of Compacted + WriteLog is a multiple SPI_FLASH_PAGE_SIZE, which is MCU dependent.
+ * size of Compacted + WriteLog is a multiple EXTERNAL_FLASH_PAGE_SIZE, which is MCU dependent.
  * Simulated Eeprom contents are located at the end of available flash space.
  *
  * The following configuration defines can be set:
  *
- * SPI_FLASH_PAGE_COUNT   # Total number of pages to use for eeprom simulation (Compact + Write log)
- * FEE_DENSITY_BYTES   # Size of simulated eeprom. (Defaults to half the space allocated by SPI_FLASH_PAGE_COUNT)
+ * EXTERNAL_FLASH_PAGE_COUNT   # Total number of pages to use for eeprom simulation (Compact + Write log)
+ * FEE_DENSITY_BYTES   # Size of simulated eeprom. (Defaults to half the space allocated by EXTERNAL_FLASH_PAGE_COUNT)
  * NOTE: The current implementation does not include page swapping,
  * and FEE_DENSITY_BYTES will consume that amount of RAM as a cached view of actual EEPROM contents.
  *
  * The maximum size of FEE_DENSITY_BYTES is currently 16384. The write log size equals
- * SPI_FLASH_PAGE_COUNT * SPI_FLASH_PAGE_SIZE - FEE_DENSITY_BYTES.
+ * EXTERNAL_FLASH_PAGE_COUNT * EXTERNAL_FLASH_PAGE_SIZE - FEE_DENSITY_BYTES.
  * The larger the write log, the less frequently the compacted area needs to be rewritten.
  *
  *
@@ -146,11 +146,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define FEE_EMPTY_WORD ((uint16_t)0xFFFF)
 
 /* Size of combined compacted eeprom and write log pages */
-#define FEE_DENSITY_MAX_SIZE (SPI_FLASH_PAGE_COUNT * SPI_FLASH_PAGE_SIZE)
+#define FEE_DENSITY_MAX_SIZE (EXTERNAL_FLASH_PAGE_COUNT * EXTERNAL_FLASH_PAGE_SIZE)
 
-#ifndef SPI_FLASH_SIZE_IGNORE_CHECK /* *TODO: Get rid of this check */
-#    if FEE_DENSITY_MAX_SIZE > (SPI_FLASH_SIZE * 1024)
-#        pragma message STR(FEE_DENSITY_MAX_SIZE) " > " STR(SPI_FLASH_SIZE * 1024)
+#ifndef EXTERNAL_FLASH_SIZE_IGNORE_CHECK /* *TODO: Get rid of this check */
+#    if FEE_DENSITY_MAX_SIZE > (EXTERNAL_FLASH_SIZE * 1024)
+#        pragma message STR(FEE_DENSITY_MAX_SIZE) " > " STR(EXTERNAL_FLASH_SIZE * 1024)
 #        error emulated eeprom: FEE_DENSITY_MAX_SIZE is greater than available flash size
 #    endif
 #endif
@@ -174,7 +174,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #    endif
 #else
 /* Default to half of allocated space used for emulated eeprom, half for write log */
-#    define FEE_DENSITY_BYTES (SPI_FLASH_PAGE_COUNT * SPI_FLASH_PAGE_SIZE / 2)
+#    define FEE_DENSITY_BYTES (EXTERNAL_FLASH_PAGE_COUNT * (EXTERNAL_FLASH_PAGE_SIZE >> 1))
 #endif
 
 /* Size of write log */
@@ -188,11 +188,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #    endif
 #else
 /* Default to use all remaining space */
-#    define FEE_WRITE_LOG_BYTES (SPI_FLASH_PAGE_COUNT * SPI_FLASH_PAGE_SIZE - FEE_DENSITY_BYTES)
+#    define FEE_WRITE_LOG_BYTES (EXTERNAL_FLASH_PAGE_COUNT * EXTERNAL_FLASH_PAGE_SIZE - FEE_DENSITY_BYTES)
 #endif
 
+#define EXTERNAL_FLASH_PAGE_BASE_ADDRESS 0
 /* Start of the emulated eeprom compacted flash area */
-#define FEE_COMPACTED_BASE_ADDRESS SPI_FLASH_PAGE_BASE_ADDRESS
+#define FEE_COMPACTED_BASE_ADDRESS EXTERNAL_FLASH_PAGE_BASE_ADDRESS
 /* End of the emulated eeprom compacted flash area */
 #define FEE_COMPACTED_LAST_ADDRESS (FEE_COMPACTED_BASE_ADDRESS + FEE_DENSITY_BYTES)
 /* Start of the emulated eeprom write log */
@@ -270,12 +271,19 @@ void print_eeprom(void) {
 #endif
 }
 
-static uint16_t EEPROM_Init(void) {
+static flash_status_t external_flash_program_half_word(uint32_t addr, uint16_t value) {
+    uint8_t *dest = (uint8_t *)addr;
+    uint8_t *src  = (uint8_t *)&value;
+
+    return flash_write_block(src, dest, 2);
+}
+
+static uint32_t EEPROM_Init(void) {
     /* Load emulated eeprom contents from compacted flash into memory */
     uint16_t *src  = (uint16_t *)FEE_COMPACTED_BASE_ADDRESS;
     uint16_t *dest = (uint16_t *)DataBuf;
 
-    SPI_FLASH_ReadBlock((uint8_t *)dest, (uint8_t *)src, FEE_COMPACTED_LAST_ADDRESS - FEE_COMPACTED_BASE_ADDRESS);
+    flash_read_block((uint8_t *)dest, (uint8_t *)src, FEE_COMPACTED_LAST_ADDRESS - FEE_COMPACTED_BASE_ADDRESS);
 
     for (int i = 0; i < ((FEE_COMPACTED_LAST_ADDRESS - FEE_COMPACTED_BASE_ADDRESS) >> 1); i++, ++dest) {
         *dest = ~*dest;
@@ -292,7 +300,7 @@ static uint16_t EEPROM_Init(void) {
     for (log_addr = (uint16_t *)FEE_WRITE_LOG_BASE_ADDRESS; log_addr < (uint16_t *)FEE_WRITE_LOG_LAST_ADDRESS; ++log_addr) {
         uint16_t address;
 
-        SPI_FLASH_ReadBlock((uint8_t *)&address, (uint8_t *)log_addr, 0x02);
+        flash_read_block((uint8_t *)&address, (uint8_t *)log_addr, 0x02);
         if (address == FEE_EMPTY_WORD) {
             break;
         }
@@ -311,7 +319,7 @@ static uint16_t EEPROM_Init(void) {
                 if (++log_addr >= (uint16_t *)FEE_WRITE_LOG_LAST_ADDRESS) {
                     break;
                 }
-                SPI_FLASH_ReadBlock((uint8_t *)&wvalue, (uint8_t *)log_addr, 0x02);
+                flash_read_block((uint8_t *)&wvalue, (uint8_t *)log_addr, 0x02);
                 wvalue = ~wvalue;
                 if (!wvalue) {
                     eeprom_printf("Incomplete write at log_addr: 0x%04x;\n", (uint32_t)log_addr);
@@ -350,13 +358,13 @@ static uint16_t EEPROM_Init(void) {
         print_eeprom();
     }
 
-    return FEE_DENSITY_BYTES;
+    return (uint32_t)FEE_DENSITY_BYTES;
 }
 
 /* Clear flash contents (doesn't touch in-memory DataBuf) */
 static void eeprom_clear(void) {
 
-    SPI_FLASH_Erase();
+    flash_erase_chip();
 
     empty_slot = (uint16_t *)FEE_WRITE_LOG_BASE_ADDRESS;
     eeprom_printf("eeprom_clear empty_slot: 0x%08x\n", (uint32_t)empty_slot);
@@ -376,7 +384,7 @@ static uint8_t eeprom_compact(void) {
     /* Erase compacted pages and write log */
     eeprom_clear();
 
-    FLASH_Status final_status = FLASH_COMPLETE;
+    flash_status_t final_status = FLASH_STATUS_SUCCESS;
 
     /* Write emulated eeprom contents from memory to compacted flash */
     uint16_t *src  = (uint16_t *)DataBuf;
@@ -385,9 +393,9 @@ static uint8_t eeprom_compact(void) {
     for (; dest < FEE_COMPACTED_LAST_ADDRESS; ++src, dest += 2) {
         value = *src;
         if (value) {
-            eeprom_printf("SPI_FLASH_ProgramHalfWord(0x%04x, 0x%04x)\n", (uint32_t)dest, ~value);
-            FLASH_Status status = SPI_FLASH_ProgramHalfWord(dest, ~value);
-            if (status != FLASH_COMPLETE) final_status = status;
+            eeprom_printf("external_flash_program_half_word(0x%04x, 0x%04x)\n", (uint32_t)dest, ~value);
+            flash_status_t status = external_flash_program_half_word(dest, ~value);
+            if (status != FLASH_STATUS_SUCCESS) final_status = status;
         }
     }
 
@@ -404,16 +412,16 @@ static uint8_t eeprom_write_direct_entry(uint16_t Address) {
     uintptr_t directAddress = FEE_COMPACTED_BASE_ADDRESS + (Address & 0xFFFE);
     uint16_t wvalue;
 
-    SPI_FLASH_ReadBlock((uint8_t *)&wvalue, (uint8_t *)directAddress, 0x02);
+    flash_read_block((uint8_t *)&wvalue, (uint8_t *)directAddress, 0x02);
     if (wvalue == FEE_EMPTY_WORD) {
         /* Write the value directly to the compacted area without a log entry */
         wvalue = ~*(uint16_t *)(&DataBuf[Address & 0xFFFE]);
 
         /* Early exit if a write isn't needed */
-        if (wvalue == FEE_EMPTY_WORD) return FLASH_COMPLETE;
+        if (wvalue == FEE_EMPTY_WORD) return FLASH_STATUS_SUCCESS;
 
-        eeprom_printf("SPI_FLASH_ProgramHalfWord(0x%08x, 0x%04x) [DIRECT]\n", (uint32_t)directAddress, wvalue);
-        FLASH_Status status = SPI_FLASH_ProgramHalfWord(directAddress, wvalue);
+        eeprom_printf("external_flash_program_half_word(0x%08x, 0x%04x) [DIRECT]\n", (uint32_t)directAddress, wvalue);
+        flash_status_t status = external_flash_program_half_word(directAddress, wvalue);
 
         return status;
     }
@@ -421,7 +429,7 @@ static uint8_t eeprom_write_direct_entry(uint16_t Address) {
 }
 
 static uint8_t eeprom_write_log_word_entry(uint16_t Address) {
-    FLASH_Status final_status = FLASH_COMPLETE;
+    flash_status_t final_status = FLASH_STATUS_SUCCESS;
 
     uint16_t value = *(uint16_t *)(&DataBuf[Address]);
     eeprom_printf("eeprom_write_log_word_entry(0x%04x): 0x%04x\n", Address, value);
@@ -452,14 +460,14 @@ static uint8_t eeprom_write_log_word_entry(uint16_t Address) {
     /* ok we found a place let's write our data */
 
     /* address */
-    eeprom_printf("SPI_FLASH_ProgramHalfWord(0x%08x, 0x%04x)\n", (uint32_t)empty_slot, Address);
-    final_status = SPI_FLASH_ProgramHalfWord((uintptr_t)empty_slot++, Address);
+    eeprom_printf("external_flash_program_half_word(0x%08x, 0x%04x)\n", (uint32_t)empty_slot, Address);
+    final_status = external_flash_program_half_word((uintptr_t)empty_slot++, Address);
 
     /* value */
     if (encoding == (FEE_WORD_ENCODING | FEE_VALUE_NEXT)) {
-        eeprom_printf("SPI_FLASH_ProgramHalfWord(0x%08x, 0x%04x)\n", (uint32_t)empty_slot, ~value);
-        FLASH_Status status = SPI_FLASH_ProgramHalfWord((uintptr_t)empty_slot++, ~value);
-        if (status != FLASH_COMPLETE) final_status = status;
+        eeprom_printf("external_flash_program_half_word(0x%08x, 0x%04x)\n", (uint32_t)empty_slot, ~value);
+        flash_status_t status = external_flash_program_half_word((uintptr_t)empty_slot++, ~value);
+        if (status != FLASH_STATUS_SUCCESS) final_status = status;
     }
 
     return final_status;
@@ -480,23 +488,23 @@ static uint8_t eeprom_write_log_byte_entry(uint16_t Address) {
     uint16_t value = (Address << 8) | DataBuf[Address];
 
     /* write to flash */
-    eeprom_printf("SPI_FLASH_ProgramHalfWord(0x%08x, 0x%04x)\n", (uint32_t)empty_slot, value);
-    FLASH_Status status = SPI_FLASH_ProgramHalfWord((uintptr_t)empty_slot++, value);
+    eeprom_printf("external_flash_program_half_word(0x%08x, 0x%04x)\n", (uint32_t)empty_slot, value);
+    flash_status_t status = external_flash_program_half_word((uintptr_t)empty_slot++, value);
 
     return status;
 }
 
-uint8_t EEPROM_WriteDataByte(uint16_t Address, uint8_t DataByte) {
+flash_status_t EEPROM_WriteDataByte(uint16_t Address, uint8_t DataByte) {
     /* if the address is out-of-bounds, do nothing */
     if (Address >= FEE_DENSITY_BYTES) {
         eeprom_printf("EEPROM_WriteDataByte(0x%04x, 0x%02x) [BAD ADDRESS]\n", Address, DataByte);
-        return FLASH_BAD_ADDRESS;
+        return FLASH_STATUS_BAD_ADDRESS;
     }
 
     /* if the value is the same, don't bother writing it */
     if (DataBuf[Address] == DataByte) {
         eeprom_printf("EEPROM_WriteDataByte(0x%04x, 0x%02x) [SKIP SAME]\n", Address, DataByte);
-        return 0;
+        return FLASH_STATUS_SUCCESS;
     }
 
     /* keep DataBuf cache in sync */
@@ -505,7 +513,7 @@ uint8_t EEPROM_WriteDataByte(uint16_t Address, uint8_t DataByte) {
 
     /* perform the write into flash memory */
     /* First, attempt to write directly into the compacted flash area */
-    FLASH_Status status = eeprom_write_direct_entry(Address);
+    flash_status_t status = eeprom_write_direct_entry(Address);
     if (!status) {
         /* Otherwise append to the write log */
         if (Address < FEE_BYTE_RANGE) {
@@ -514,26 +522,26 @@ uint8_t EEPROM_WriteDataByte(uint16_t Address, uint8_t DataByte) {
             status = eeprom_write_log_word_entry(Address & 0xFFFE);
         }
     }
-    if (status != 0 && status != FLASH_COMPLETE) {
+    if (status != 0 && status != FLASH_STATUS_SUCCESS) {
         eeprom_printf("EEPROM_WriteDataByte [STATUS == %d]\n", status);
     }
     return status;
 }
 
-uint8_t EEPROM_WriteDataWord(uint16_t Address, uint16_t DataWord) {
+flash_status_t EEPROM_WriteDataWord(uint16_t Address, uint16_t DataWord) {
     /* if the address is out-of-bounds, do nothing */
     if (Address >= FEE_DENSITY_BYTES) {
         eeprom_printf("EEPROM_WriteDataWord(0x%04x, 0x%04x) [BAD ADDRESS]\n", Address, DataWord);
-        return FLASH_BAD_ADDRESS;
+        return FLASH_STATUS_BAD_ADDRESS;
     }
 
     /* Check for word alignment */
-    FLASH_Status final_status = FLASH_COMPLETE;
+    flash_status_t final_status = FLASH_STATUS_SUCCESS;
     if (Address % 2) {
         final_status        = EEPROM_WriteDataByte(Address, DataWord);
-        FLASH_Status status = EEPROM_WriteDataByte(Address + 1, DataWord >> 8);
-        if (status != FLASH_COMPLETE) final_status = status;
-        if (final_status != 0 && final_status != FLASH_COMPLETE) {
+        flash_status_t status = EEPROM_WriteDataByte(Address + 1, DataWord >> 8);
+        if (status != FLASH_STATUS_SUCCESS) final_status = status;
+        if (final_status != 0 && final_status != FLASH_STATUS_SUCCESS) {
             eeprom_printf("EEPROM_WriteDataWord [STATUS == %d]\n", final_status);
         }
         return final_status;
@@ -543,7 +551,7 @@ uint8_t EEPROM_WriteDataWord(uint16_t Address, uint16_t DataWord) {
     uint16_t oldValue = *(uint16_t *)(&DataBuf[Address]);
     if (oldValue == DataWord) {
         eeprom_printf("EEPROM_WriteDataWord(0x%04x, 0x%04x) [SKIP SAME]\n", Address, DataWord);
-        return 0;
+        return FLASH_STATUS_SUCCESS;
     }
 
     /* keep DataBuf cache in sync */
@@ -557,22 +565,22 @@ uint8_t EEPROM_WriteDataWord(uint16_t Address, uint16_t DataWord) {
         /* Otherwise append to the write log */
         /* Check if we need to fall back to byte write */
         if (Address < FEE_BYTE_RANGE) {
-            final_status = FLASH_COMPLETE;
+            final_status = FLASH_STATUS_SUCCESS;
             /* Only write a byte if it has changed */
             if ((uint8_t)oldValue != (uint8_t)DataWord) {
                 final_status = eeprom_write_log_byte_entry(Address);
             }
-            FLASH_Status status = FLASH_COMPLETE;
+            flash_status_t status = FLASH_STATUS_SUCCESS;
             /* Only write a byte if it has changed */
             if ((oldValue >> 8) != (DataWord >> 8)) {
                 status = eeprom_write_log_byte_entry(Address + 1);
             }
-            if (status != FLASH_COMPLETE) final_status = status;
+            if (status != FLASH_STATUS_SUCCESS) final_status = status;
         } else {
             final_status = eeprom_write_log_word_entry(Address);
         }
     }
-    if (final_status != 0 && final_status != FLASH_COMPLETE) {
+    if (final_status != 0 && final_status != FLASH_STATUS_SUCCESS) {
         eeprom_printf("EEPROM_WriteDataWord [STATUS == %d]\n", final_status);
     }
     return final_status;
@@ -611,7 +619,7 @@ uint16_t EEPROM_ReadDataWord(uint16_t Address) {
  *  Bind to eeprom_driver.c
  *******************************************************************************/
 void eeprom_driver_init(void) {
-    spi_init();
+    wb32_spi_init();
     EEPROM_Init();
 }
 

@@ -65,7 +65,7 @@
 
 #ifndef SPI_SCK_PAL_CURRENT_LEVEL
 #    if defined(WB32F3G71xx)
-#        define SPI_SCK_PAL_CURRENT_LEVEL PAL_CURRENT_LEVEL3
+#        define SPI_SCK_PAL_CURRENT_LEVEL PAL_WB32_CURRENT_LEVE3
 #    else
 #        define SPI_SCK_PAL_CURRENT_LEVEL 0
 #    endif
