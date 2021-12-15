@@ -362,8 +362,17 @@ static uint32_t EEPROM_Init(void) {
 
 /* Clear flash contents (doesn't touch in-memory DataBuf) */
 static void eeprom_clear(void) {
+    uint32_t erase_addr = EXTERNAL_FLASH_PAGE_BASE_ADDRESS;
 
-    flash_erase_chip();
+    for ( ; erase_addr < (uint32_t)(EXTERNAL_FLASH_SIZE << 10);) {
+        
+        if (erase_addr % ((uint32_t)(EXTERNAL_FLASH_SECTOR_SIZE)) != 0) {
+            eeprom_printf("The external Flash address to be erased is incorrect: 0x%08x\n", (uint32_t)erase_addr);
+            break;
+        }
+        flash_erase_sector((void *)erase_addr);
+        erase_addr += (uint32_t)(EXTERNAL_FLASH_SECTOR_SIZE << 10);
+    }
 
     empty_slot = (uint16_t *)FEE_WRITE_LOG_BASE_ADDRESS;
     eeprom_printf("eeprom_clear empty_slot: 0x%08x\n", (uint32_t)empty_slot);
