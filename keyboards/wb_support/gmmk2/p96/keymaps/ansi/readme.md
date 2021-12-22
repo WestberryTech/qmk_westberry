@@ -1,1 +1,1 @@
-# ANSI gmmk2 96% Layout
+# ANSI GMMKV2 96% Layout
