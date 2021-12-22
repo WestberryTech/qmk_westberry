@@ -1,1 +1,1 @@
-# Default gmmk2 96% iso Layout
+# ISO gmmk2 96% Layout

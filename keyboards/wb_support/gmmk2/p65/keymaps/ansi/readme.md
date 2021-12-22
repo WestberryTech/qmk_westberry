@@ -1,1 +1,1 @@
-# Default gmmk2 65% ansi Layout
+# ANSI gmmk2 65% Layout
