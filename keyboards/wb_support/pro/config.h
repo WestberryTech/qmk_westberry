@@ -18,10 +18,6 @@
 
 #include "config_common.h"
 
-#define EARLY_INIT_PERFORM_BOOTLOADER_JUMP TRUE
-#define EXTERNAL_FLASH_SPI_SLAVE_SELECT_PIN B12
-#define EXTERNAL_FLASH_SIZE 8
-
 /* USB Device descriptor parameter */
 #define DEVICE_VER 0x0001
 #define VENDOR_ID 0x320F
@@ -57,7 +53,7 @@
 #define LOCKING_RESYNC_ENABLE
 
 /* SPI Config for LED Driver */
-#define SPI_DRIVER SPIDQ
+#define SPI_DRIVER SPID1
 #define SPI_SCK_PIN A5
 #define SPI_MOSI_PIN A6
 #define SPI_MISO_PIN A7
