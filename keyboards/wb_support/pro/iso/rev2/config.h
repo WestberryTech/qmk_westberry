@@ -19,7 +19,7 @@
 #include "config_common.h"
 
 #define EXTERNAL_FLASH_SPI_SLAVE_SELECT_PIN B12
-#define EXTERNAL_FLASH_SIZE 8
+#define EXTERNAL_FLASH_SIZE (8 * 1024)
 
 #undef SPI_DRIVER
 #define SPI_DRIVER SPIDQ

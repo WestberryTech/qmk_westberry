@@ -21,7 +21,7 @@ void spi_init(void) {
     if (!is_initialised) {
         is_initialised = true;
 
-        // Try releasing special pins for a short time
+        /* Try releasing special pins for a short time. */
         setPinInput(SPI_SCK_PIN);
         setPinInput(SPI_MOSI_PIN);
         setPinInput(SPI_MISO_PIN);
@@ -31,7 +31,7 @@ void spi_init(void) {
         palSetPadMode(PAL_PORT(SPI_SCK_PIN), PAL_PAD(SPI_SCK_PIN), PAL_MODE_ALTERNATE(SPI_SCK_PAL_MODE) | PAL_OUTPUT_TYPE_PUSHPULL | PAL_OUTPUT_SPEED_HIGHEST);
         palSetPadMode(PAL_PORT(SPI_MOSI_PIN), PAL_PAD(SPI_MOSI_PIN), PAL_MODE_ALTERNATE(SPI_MOSI_PAL_MODE) | PAL_OUTPUT_TYPE_PUSHPULL | PAL_OUTPUT_SPEED_HIGHEST);
         palSetPadMode(PAL_PORT(SPI_MISO_PIN), PAL_PAD(SPI_MISO_PIN), PAL_MODE_ALTERNATE(SPI_MISO_PAL_MODE) | PAL_OUTPUT_TYPE_PUSHPULL | PAL_OUTPUT_SPEED_HIGHEST);
-        PAL_PORT(SPI_SCK_PIN)->CFGMSK = ~(1 << PAL_PAD(SPI_SCK_PIN));
+        PAL_PORT(SPI_SCK_PIN)->CFGMSK  = ~(1 << PAL_PAD(SPI_SCK_PIN));
         PAL_PORT(SPI_SCK_PIN)->CURRENT = 0x03;
     }
 }

@@ -3,7 +3,6 @@
 #include "config_common.h"
 
 #define RGB_DISABLE_WHEN_USB_SUSPENDED TRUE
-#define EARLY_INIT_PERFORM_BOOTLOADER_JUMP TRUE
 #define EXTERNAL_FLASH_SPI_SLAVE_SELECT_PIN B14
 
 /* USB Device descriptor parameter */

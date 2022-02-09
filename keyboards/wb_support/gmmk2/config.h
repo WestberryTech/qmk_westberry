@@ -3,8 +3,7 @@
 #include "config_common.h"
 
 #define RGB_DISABLE_WHEN_USB_SUSPENDED TRUE
-#define EARLY_INIT_PERFORM_BOOTLOADER_JUMP TRUE
-#define EXTERNAL_FLASH_SIZE 8
+#define EXTERNAL_FLASH_SIZE (8 * 1024)
 
 /* USB Device descriptor parameter */
 #define DEVICE_VER 0x0001
