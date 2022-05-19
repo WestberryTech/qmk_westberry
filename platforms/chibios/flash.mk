@@ -23,10 +23,6 @@ define EXEC_DFU_UTIL
 	$(DFU_UTIL) $(DFU_ARGS) -D $(BUILD_DIR)/$(TARGET).bin
 endef
 
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/qmk_master
 define EXEC_WB32_DFU_UPDATER
 	if ! wb32-dfu-updater_cli -l | grep -q "Found DFU"; then \
 		printf "$(MSG_BOOTLOADER_NOT_FOUND_QUICK_RETRY)" ;\

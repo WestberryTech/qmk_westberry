@@ -189,9 +189,6 @@ bool spi_start(pin_t slavePin, bool lsbFirst, uint8_t mode, uint16_t divisor) {
     }
 
     spiConfig.cpr = (roundedDivisor - 1) >> 1;
-<<<<<<< HEAD
-#    else
-=======
 
 #elif defined(WB32F3G71xx)
     if (!lsbFirst) {
@@ -224,7 +221,6 @@ bool spi_start(pin_t slavePin, bool lsbFirst, uint8_t mode, uint16_t divisor) {
     }
 
 #else
->>>>>>> origin/qmk_master
     spiConfig.cr1 = 0;
 
     if (lsbFirst) {
