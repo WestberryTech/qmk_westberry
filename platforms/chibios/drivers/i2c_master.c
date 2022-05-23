@@ -47,6 +47,13 @@
 #    ifndef I2C1_DUTY_CYCLE
 #        define I2C1_DUTY_CYCLE STD_DUTY_CYCLE /* FAST_DUTY_CYCLE_2 */
 #    endif
+#elif defined(WB32F3G71xx)
+#    ifndef I2C1_OPMODE
+#        define I2C1_OPMODE OPMODE_I2C
+#    endif
+#    ifndef I2C1_CLOCK_SPEED
+#        define I2C1_CLOCK_SPEED 100000 /* 400000 */
+#    endif
 #else
 // The default timing values below configures the I2C clock to 400khz assuming a 72Mhz clock
 // For more info : https://www.st.com/en/embedded-software/stsw-stm32126.html
@@ -129,17 +136,12 @@ __attribute__((weak)) void i2c_init(void) {
         palSetLineMode(I2C1_SDA_PIN, PAL_MODE_INPUT);
 
         chThdSleepMilliseconds(10);
-#if defined(WB32F3G71xx)
-        palSetPadMode(I2C1_SCL_PIN, PAL_MODE_ALTERNATE(I2C1_SCL_PAL_MODE) | PAL_WB32_OTYPE_OPENDRAIN);
-        palSetPadMode(I2C1_SDA_PIN, PAL_MODE_ALTERNATE(I2C1_SDA_PAL_MODE) | PAL_WB32_OTYPE_OPENDRAIN);
-#else
-#    if defined(USE_GPIOV1)
+#if defined(USE_GPIOV1)
         palSetLineMode(I2C1_SCL_PIN, I2C1_SCL_PAL_MODE);
         palSetLineMode(I2C1_SDA_PIN, I2C1_SDA_PAL_MODE);
-#    else
+#else
         palSetLineMode(I2C1_SCL_PIN, PAL_MODE_ALTERNATE(I2C1_SCL_PAL_MODE) | PAL_OUTPUT_TYPE_OPENDRAIN);
         palSetLineMode(I2C1_SDA_PIN, PAL_MODE_ALTERNATE(I2C1_SDA_PAL_MODE) | PAL_OUTPUT_TYPE_OPENDRAIN);
-#    endif
 #endif
     }
 }
