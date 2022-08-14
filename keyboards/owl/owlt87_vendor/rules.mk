@@ -19,6 +19,5 @@ AUDIO_ENABLE = no           # Audio output
 ENCODER_ENABLE = no
 RGB_MATRIX_ENABLE = yes
 RGB_MATRIX_DRIVER = IS31FL3737
-EEPROM_DRIVER = custom      # Enable SPI flash memory
-
-SRC += src/eeprom_wb32.c
+EEPROM_DRIVER = wear_leveling
+WEAR_LEVELING_DRIVER = embedded_flash

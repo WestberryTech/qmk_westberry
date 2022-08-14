@@ -18,4 +18,4 @@
 
 #include "config_common.h"
 
-#define STM32_USB_USE_OTG1 TRUE
+#define USB_ENDPOINTS_ARE_REORDERABLE

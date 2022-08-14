@@ -57,8 +57,6 @@
 
 #define RGB_DISABLE_WHEN_USB_SUSPENDED
 
-#define EEPROM_SIZE 2048
-
 /* I2C Config for LED Driver */
 #define DRIVER_COUNT 2
 #define DRIVER_ADDR_1 0x50
@@ -121,9 +119,6 @@
 #define ENABLE_RGB_MATRIX_MULTISPLASH
 #define ENABLE_RGB_MATRIX_SOLID_SPLASH
 #define ENABLE_RGB_MATRIX_SOLID_MULTISPLASH
-
-/* Send up to 4 key press events per scan */
-#define QMK_KEYS_PER_SCAN 4
 
 /* Set debounce time to 2ms */
 #define DEBOUNCE 2
