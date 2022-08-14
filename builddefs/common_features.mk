@@ -133,8 +133,9 @@ ifeq ($(strip $(POINTING_DEVICE_ENABLE)), yes)
     else
         OPT_DEFS += -DPOINTING_DEVICE_ENABLE
         MOUSE_ENABLE := yes
-        SRC += $(QUANTUM_DIR)/pointing_device.c
-        SRC += $(QUANTUM_DIR)/pointing_device_drivers.c
+        VPATH += $(QUANTUM_DIR)/pointing_device
+        SRC += $(QUANTUM_DIR)/pointing_device/pointing_device.c
+        SRC += $(QUANTUM_DIR)/pointing_device/pointing_device_drivers.c
         ifneq ($(strip $(POINTING_DEVICE_DRIVER)), custom)
             SRC += drivers/sensors/$(strip $(POINTING_DEVICE_DRIVER)).c
             OPT_DEFS += -DPOINTING_DEVICE_DRIVER_$(strip $(shell echo $(POINTING_DEVICE_DRIVER) | tr '[:lower:]' '[:upper:]'))
@@ -150,13 +151,13 @@ ifeq ($(strip $(POINTING_DEVICE_ENABLE)), yes)
             OPT_DEFS += -DSTM32_I2C -DHAL_USE_I2C=TRUE
             SRC += drivers/sensors/cirque_pinnacle.c
             SRC += drivers/sensors/cirque_pinnacle_gestures.c
-            SRC += $(QUANTUM_DIR)/pointing_device_gestures.c
+            SRC += $(QUANTUM_DIR)/pointing_device/pointing_device_gestures.c
             QUANTUM_LIB_SRC += i2c_master.c
         else ifeq ($(strip $(POINTING_DEVICE_DRIVER)), cirque_pinnacle_spi)
             OPT_DEFS += -DSTM32_SPI -DHAL_USE_SPI=TRUE
             SRC += drivers/sensors/cirque_pinnacle.c
             SRC += drivers/sensors/cirque_pinnacle_gestures.c
-            SRC += $(QUANTUM_DIR)/pointing_device_gestures.c
+            SRC += $(QUANTUM_DIR)/pointing_device/pointing_device_gestures.c
             QUANTUM_LIB_SRC += spi_master.c
         else ifeq ($(strip $(POINTING_DEVICE_DRIVER)), pimoroni_trackball)
             OPT_DEFS += -DSTM32_SPI -DHAL_USE_I2C=TRUE
@@ -331,7 +332,7 @@ ifeq ($(strip $(RGBLIGHT_ENABLE)), yes)
 endif
 
 LED_MATRIX_ENABLE ?= no
-VALID_LED_MATRIX_TYPES := IS31FL3731 IS31FL3742A IS31FL3743A IS31FL3745 IS31FL3746A custom
+VALID_LED_MATRIX_TYPES := IS31FL3731 IS31FL3742A IS31FL3743A IS31FL3745 IS31FL3746A CKLED2001 custom
 # TODO: IS31FL3733 IS31FL3737 IS31FL3741
 
 ifeq ($(strip $(LED_MATRIX_ENABLE)), yes)
@@ -384,6 +385,13 @@ endif
         OPT_DEFS += -DIS31FLCOMMON -DIS31FL3746A -DSTM32_I2C -DHAL_USE_I2C=TRUE
         COMMON_VPATH += $(DRIVER_PATH)/led/issi
         SRC += is31flcommon.c
+        QUANTUM_LIB_SRC += i2c_master.c
+    endif
+
+	ifeq ($(strip $(LED_MATRIX_DRIVER)), CKLED2001)
+        OPT_DEFS += -DCKLED2001 -DSTM32_I2C -DHAL_USE_I2C=TRUE
+        COMMON_VPATH += $(DRIVER_PATH)/led
+        SRC += ckled2001-simple.c
         QUANTUM_LIB_SRC += i2c_master.c
     endif
 
@@ -890,5 +898,13 @@ ifeq ($(strip $(BLUETOOTH_ENABLE)), yes)
         OPT_DEFS += -DBLUETOOTH_RN42
         SRC += $(DRIVER_PATH)/bluetooth/rn42.c
         QUANTUM_LIB_SRC += uart.c
+    endif
+endif
+
+ifeq ($(strip $(ENCODER_ENABLE)), yes)
+    SRC += $(QUANTUM_DIR)/encoder.c
+    OPT_DEFS += -DENCODER_ENABLE
+    ifeq ($(strip $(ENCODER_MAP_ENABLE)), yes)
+        OPT_DEFS += -DENCODER_MAP_ENABLE
     endif
 endif
