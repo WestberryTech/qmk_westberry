@@ -18,6 +18,9 @@
 
 #include "config_common.h"
 
+/* custom */
+#define ENABLE_CUSTOM_KEY
+
 /* USB Device descriptor parameter */
 #define DEVICE_VER 0x0001
 #define VENDOR_ID 0x3528

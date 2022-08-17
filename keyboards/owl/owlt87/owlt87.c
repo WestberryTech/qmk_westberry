@@ -260,3 +260,40 @@ bool led_update_kb(led_t led_state) {
 void restart_usb_driver(USBDriver *usbp) {
     // Do nothing. Restarting the USB driver on these boards breaks it.
 }
+
+#ifdef ENABLE_CUSTOM_KEY
+
+enum custom_keycodes {
+  BT_DEV1 = USER00,
+  BT_DEV2,
+  BT_DEV3,
+  BT_2_4G,
+  VIA_RST,
+  EEP_RST,
+};
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+  switch (keycode) {
+    case VIA_RST: {
+      if (record->event.pressed) {
+#ifdef VIA_ENABLE
+        #include "via.h"
+        via_eeprom_set_valid(false);
+        eeconfig_init_via();
+#endif
+      }
+      break;
+    }
+    case EEP_RST: {
+      eeconfig_disable();
+      break;
+    }
+    default: {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+#endif /* ENABLE_CUSTOM_KEY */

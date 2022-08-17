@@ -23,6 +23,12 @@
     },
     "matrix": {"rows": 10, "cols": 9},
     "customKeycodes": [
+      {"name": "BT DEV1","title": "BT Device 1","shortName": "DEV1"},
+      {"name": "BT DEV2","title": "BT Device 2","shortName": "DEV2"},
+      {"name": "BT DEV3","title": "BT Device 3","shortName": "DEV3"},
+      {"name": "2.4G","title": "2.4G","shortName": "2.4G"},
+      {"name": "VIA_RST","title": "Reset VIA Layout","shortName": "VIA_RST"},
+      {"name": "EEP_RST","title": "Clear EEPROM","shortName": "EEP_RST"},
       {"name": "Mission Control", "title": "Mission Control in macOS", "shortName": "Mission Control"},
       {"name": "Launch Pad", "title": "Launch Pad in macOS", "shortName": "Launch Pad"},
       {"name": "Left Option", "title": "Left Option in macOS", "shortName": "Left Option"},
