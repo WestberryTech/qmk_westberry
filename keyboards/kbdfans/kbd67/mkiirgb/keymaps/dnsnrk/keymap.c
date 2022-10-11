@@ -39,7 +39,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                        _______,  _______,  _______,                   _______,                   _______,          _______,          RGB_HUD, RGB_VAD, RGB_HUI),
     [_LAYER2] = LAYOUT_65_ansi_blocker( /* Media, Programming */
                                        _______,  KC_BRMD, KC_BRMU, _______, _______, _______, _______, KC_MRWD, KC_MPLY, KC_MFFD, KC__MUTE, KC_VOLD, KC_VOLU, KC_EJCT, _______,
-                                       _______,  _______, _______, EEP_RST, RESET,   _______, _______, _______, _______, _______,  _______, _______, _______, _______, _______,
+                                       _______,  _______, _______, EEP_RST, QK_BOOT, _______, _______, _______, _______, _______,  _______, _______, _______, _______, _______,
                                        _______,  _______, _______, _______, _______, _______, _______, _______, _______, _______,  _______, _______,          _______, _______,
                                        _______,  _______, _______, _______, _______, _______, AG_NORM, AG_SWAP, _______, _______,  _______,          _______, _______, _______,
                                        _______,  _______, _______,                   _______,                   _______,           _______,          _______, _______, _______)
@@ -51,7 +51,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     return true;
 }
 
-void rgb_matrix_indicators_user(void) {
+bool rgb_matrix_indicators_user(void) {
     if (rgb_matrix_config.enable) {
         HSV hsv = rgb_matrix_config.hsv;
         if (IS_HOST_LED_ON(USB_LED_CAPS_LOCK)) {
@@ -87,6 +87,7 @@ void rgb_matrix_indicators_user(void) {
         set_hsv_at(hsv1, 63);
         set_hsv_at(hsv2, 57);
     }
+    return false;
 }
 
 void set_hsv_at(HSV hsv, uint8_t index) {

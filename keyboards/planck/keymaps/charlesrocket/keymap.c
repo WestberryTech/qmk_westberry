@@ -44,20 +44,20 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [_LOWER] = LAYOUT_planck_grid(
     KC_TILD,   KC_EXLM, KC_AT,   KC_HASH, KC_DLR,  KC_PERC, KC_CIRC, KC_AMPR,       KC_ASTR,             KC_LPRN,           KC_RPRN,         _______,
     KC_DELETE, KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_UNDS,       KC_PLUS,             KC_LCBR,           KC_RCBR,         KC_PIPE,
-    _______,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  KC_NONUS_HASH, KC_NONUS_BSLASH,     KC_HOME,           KC_END,          _______,
+    _______,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  KC_NONUS_HASH, KC_NUBS,             KC_HOME,           KC_END,          _______,
     KC_COMMA,  _______, _______, _______, _______, _______, KC_NO,   _______,       KC_MEDIA_NEXT_TRACK, KC_AUDIO_VOL_DOWN, KC_AUDIO_VOL_UP, KC_MEDIA_PLAY_PAUSE
   ),
 
   [_RAISE] = LAYOUT_planck_grid(
     KC_GRAVE,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,   KC_7,          KC_8,                KC_9,               KC_0,            _______,
-    KC_DELETE, KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,  KC_MINUS,      KC_EQUAL,            KC_LBRACKET,        KC_RBRACKET,     KC_BSLASH,
-    _______,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12, KC_NONUS_HASH, KC_NONUS_BSLASH,     KC_PGUP,            KC_PGDOWN,       _______,
+    KC_DELETE, KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,  KC_MINUS,      KC_EQUAL,            KC_LBRC,            KC_RBRC,         KC_BSLASH,
+    _______,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12, KC_NONUS_HASH, KC_NUBS,             KC_PGUP,            KC_PGDOWN,       _______,
     _______,   _______, _______, _______, _______, _______, KC_NO,  _______,       KC_MEDIA_NEXT_TRACK, KC_AUDIO_VOL_DOWN,  KC_AUDIO_VOL_UP, KC_MEDIA_PLAY_PAUSE
   ),
 
   [_ADJUST] = LAYOUT_planck_grid(
     _______,   CK_UP,   _______, _______, _______, _______, _______, _______, _______,_______,  _______, _______,
-    KC_DELETE, CK_TOGG, AU_ON,   AU_OFF,  AU_TOG,  _______, _______, _______, RGB_VAI,RGB_VAD , _______, RESET,
+    KC_DELETE, CK_TOGG, AU_ON,   AU_OFF,  AU_TOG,  _______, _______, _______, RGB_VAI,RGB_VAD , _______, QK_BOOT,
     _______,   CK_DOWN, MU_ON,   MU_OFF,  MU_TOG,  _______, _______, _______, _______, _______, _______, _______,
     _______,   _______, _______, _______, _______, _______, KC_NO,   _______, _______, _______, _______, _______
   ),
@@ -71,7 +71,7 @@ void keyboard_post_init_user(void) {
   rgb_matrix_enable();
 }
 
-const uint8_t PROGMEM ledmap[][DRIVER_LED_TOTAL][3] = {
+const uint8_t PROGMEM ledmap[][RGB_MATRIX_LED_COUNT][3] = {
     [0] = { {0,255,255}, {0,255,255}, {0,255,255}, {0,255,255}, {0,255,255}, {0,255,255}, {0,255,255}, {0,255,255}, {0,255,255}, {0,255,255}, {0,255,255}, {0,255,255}, {0,255,255}, {0,255,255}, {0,255,255}, {0,255,255}, {0,255,255}, {0,255,255}, {0,255,255}, {0,255,255}, {0,255,255}, {0,255,255}, {0,255,255}, {0,255,255}, {0,255,255}, {0,255,255}, {0,255,255}, {0,255,255}, {0,255,255}, {0,255,255}, {0,255,255}, {0,255,255}, {0,255,255}, {0,255,255}, {0,255,255}, {0,255,255}, {0,255,255}, {0,255,255}, {0,255,255}, {0,255,255}, {0,255,255}, {0,255,255}, {0,255,255}, {0,255,255}, {0,255,255}, {0,255,255}, {0,255,255} },
 
     [1] = { {193,255,255}, {193,255,255}, {193,255,255}, {193,255,255}, {193,255,255}, {193,255,255}, {193,255,255}, {193,255,255}, {193,255,255}, {193,255,255}, {193,255,255}, {193,255,255}, {193,255,255}, {193,255,255}, {193,255,255}, {193,255,255}, {193,255,255}, {193,255,255}, {193,255,255}, {193,255,255}, {193,255,255}, {193,255,255}, {193,255,255}, {193,255,255}, {193,255,255}, {193,255,255}, {193,255,255}, {193,255,255}, {193,255,255}, {193,255,255}, {193,255,255}, {193,255,255}, {193,255,255}, {193,255,255}, {193,255,255}, {193,255,255}, {193,255,255}, {193,255,255}, {193,255,255}, {193,255,255}, {193,255,255}, {193,255,255}, {193,255,255}, {193,255,255}, {193,255,255}, {193,255,255}, {193,255,255} },
@@ -83,7 +83,7 @@ const uint8_t PROGMEM ledmap[][DRIVER_LED_TOTAL][3] = {
 };
 
 void set_layer_color(int layer) {
-  for (int i = 0; i < DRIVER_LED_TOTAL; i++) {
+  for (int i = 0; i < RGB_MATRIX_LED_COUNT; i++) {
     HSV hsv = {
       .h = pgm_read_byte(&ledmap[layer][i][0]),
       .s = pgm_read_byte(&ledmap[layer][i][1]),
@@ -99,7 +99,7 @@ void set_layer_color(int layer) {
   }
 }
 
-void rgb_matrix_indicators_user(void) {
+bool rgb_matrix_indicators_user(void) {
   if (g_suspend_state || keyboard_config.disable_layer_led) { return; }
   switch (get_highest_layer(layer_state)) {
     case 0:
@@ -119,6 +119,7 @@ void rgb_matrix_indicators_user(void) {
       rgb_matrix_set_color_all(0, 0, 0);
     break;
   }
+    return false;
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {

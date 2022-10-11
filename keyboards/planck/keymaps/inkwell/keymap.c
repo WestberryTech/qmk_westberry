@@ -98,7 +98,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `-----------------------------------------------------------------------------------'
  */
 [_ADJUST] = LAYOUT_planck_grid(
-    RESET,   _______,  _______,  _______,  _______, _______, _______, KC_BTN1, KC_MS_BTN2, KC_ACL1, KC_ACL2,  KC_BSPC ,
+    QK_BOOT, _______,  _______,  _______,  _______, _______, _______, KC_BTN1, KC_MS_BTN2, KC_ACL1, KC_ACL2,  KC_BSPC ,
     _______, KC_CALC,  KC_MAIL,  KC_MSEL,  DEBUG,   _______, _______, KC_MS_L, KC_MS_D,    KC_MS_U, KC_MS_R,  RGB_TOG,
     KC_LSFT, _______,  _______,  _______,  _______, _______, _______, _______, _______,    _______, _______,  KC_ENT,
     RSFT_T(KC_MPLY),   KC_LCTL,  KC_LALT,  KC_LGUI, KC_SPC,  LOWER,   RAISE,   KC_SPC,     KC_LEFT, KC_DOWN,  KC_UP,  KC_RGHT
@@ -166,7 +166,7 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
           if (clockwise) {
             tap_code16(KC_PAUSE);
           } else {
-            tap_code16(KC_SCROLLLOCK);
+            tap_code16(KC_SCROLL_LOCK);
           }
           set_mods(mod_state);
       } else {

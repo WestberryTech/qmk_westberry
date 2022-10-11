@@ -217,7 +217,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    *                                                    \_____________\_ Backlight _/
    */
   [KEYBOARD_LAYER] = LAYOUT_planck_grid(
-    ___x___, RESET,   ___x___, ___x___, ___x___, ___x___, ___x___, ___x___, ___x___, ___x___, ___x___, ___x___,
+    ___x___, QK_BOOT, ___x___, ___x___, ___x___, ___x___, ___x___, ___x___, ___x___, ___x___, ___x___, ___x___,
     ___x___, QWERTY,  COLEMAK, STENO,   ___x___, ___x___, ___x___, ___x___, ___x___, ___x___, ___x___, ___x___,
     ___x___, MUV_DE,  MUV_IN,  MU_ON,   MU_OFF,  MI_ON,   MI_OFF,  ___x___, ___x___, AU_ON,   AU_OFF,  ___x___,
     ___x___, ___x___, ___x___, ___x___, LOWER,   BL_TOGG, BL_TOGG, RAISE,   BL_TOGG, BL_DEC,  BL_INC,  ___x___
@@ -236,8 +236,8 @@ const macro_t *action_get_macro(keyrecord_t *record, uint8_t id, uint8_t opt)
 
         if (record->tap.count && !record->tap.interrupted) {
           add_weak_mods(MOD_LSFT);
-          register_code(KC_LBRACKET);
-          unregister_code(KC_LBRACKET);
+          register_code(KC_LEFT_BRACKET);
+          unregister_code(KC_LEFT_BRACKET);
           del_weak_mods(MOD_LSFT);
         }
 
@@ -253,8 +253,8 @@ const macro_t *action_get_macro(keyrecord_t *record, uint8_t id, uint8_t opt)
 
         if (record->tap.count && !record->tap.interrupted) {
           add_weak_mods(MOD_LSFT);
-          register_code(KC_RBRACKET);
-          unregister_code(KC_RBRACKET);
+          register_code(KC_RIGHT_BRACKET);
+          unregister_code(KC_RIGHT_BRACKET);
           del_weak_mods(MOD_LSFT);
         }
 

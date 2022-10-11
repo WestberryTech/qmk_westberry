@@ -41,7 +41,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 	KC_TRNS,   KC_F,    KC_G,        KC_C,        KC_R,      KC_L,     KC_SLASH,
 	KC_D,      KC_H,    KC_T,        KC_N,        KC_S,      KC_MINUS,
 	KC_TRNS,   KC_B,    KC_M,        KC_W,        KC_V,      KC_Z,     KC_LSHIFT,
-	                    KC_LBRACKET, KC_RBRACKET, KC_BSLASH, KC_UNDO,  LCTL(KC_A),
+	                    KC_LBRC,     KC_RBRC,     KC_BSLASH, KC_UNDO,  LCTL(KC_A),
 	KC_END,    KC_HOME,
 	KC_PGUP,
 	KC_PGDOWN, KC_ENTER, KC_SPACE
@@ -161,11 +161,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 	KC_TRNS,
 	KC_TRNS,KC_TRNS,KC_TRNS,
 	// Right Hand
-	KC_TRNS, KC_TRNS,  KC_LOCKING_NUM, KC_KP_SLASH, KC_KP_ASTERISK, KC_KP_MINUS, KC_TRNS,
-	KC_TRNS, KC_TRNS,  KC_KP_7,        KC_KP_8,     KC_KP_9,        KC_KP_PLUS,  KC_TRNS,
-	         KC_TRNS,  KC_KP_4,        KC_KP_5,     KC_KP_6,        KC_KP_PLUS,  KC_TRNS,
-	KC_TRNS, KC_TRNS,  KC_KP_1,        KC_KP_2,     KC_KP_3,        KC_ENTER,    KC_TRNS,
-	                   KC_KP_0,        KC_KP_0,     KC_KP_DOT,      KC_ENTER,    KC_TRNS,
+	KC_TRNS, KC_TRNS,  KC_LNUM, KC_KP_SLASH, KC_KP_ASTERISK, KC_KP_MINUS, KC_TRNS,
+	KC_TRNS, KC_TRNS,  KC_KP_7, KC_KP_8,     KC_KP_9,        KC_KP_PLUS,  KC_TRNS,
+	         KC_TRNS,  KC_KP_4, KC_KP_5,     KC_KP_6,        KC_KP_PLUS,  KC_TRNS,
+	KC_TRNS, KC_TRNS,  KC_KP_1, KC_KP_2,     KC_KP_3,        KC_ENTER,    KC_TRNS,
+	                   KC_KP_0, KC_KP_0,     KC_KP_DOT,      KC_ENTER,    KC_TRNS,
 	KC_TRNS,  KC_TRNS,
 	KC_TRNS,
 	KC_TRNS, KC_TRNS, KC_TRNS

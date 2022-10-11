@@ -396,8 +396,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 [NUM] = LAYOUT_ergodox(
        // left hand
 	   KC_NO, KC_F1,      KC_F2,          KC_F3,      KC_F4,   KC_F5,   KC_NO,
-	   KC_NO, KC_NO,    KC_NO,        JP_DQUO,   KC_RBRACKET,   KC_BSPC, KC_SCLN,
-       KC_NO, KC_NO,    KC_SLSH,        JP_PLUS,    LSFT(KC_RBRACKET),   JP_RCBR,
+	   KC_NO, KC_NO,    KC_NO,        JP_DQUO,   KC_RBRC,   KC_BSPC, KC_SCLN,
+       KC_NO, KC_NO,    KC_SLSH,        JP_PLUS,    LSFT(KC_RBRC),   JP_RCBR,
        KC_NO, KC_NO,    JP_ASTR,        KC_MINS,    LSFT(KC_8), LSFT(KC_9), JP_COLN,
        KC_TRNS, KC_NO,    KC_NO,        KC_NO,    KC_HASH,
                                            KC_NO, KC_NO,
@@ -405,7 +405,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                   KC_NO, KC_NO, KC_TRNS,
        // right hand
        KC_NO, KC_F6,   KC_F7,  KC_F8,   KC_F9,   KC_F10,  KC_F11,
-       LSFT(KC_JYEN), KC_PERC,   KC_7,   KC_8,    KC_9,    KC_NO, KC_F12,
+       LSFT(JP_YEN), KC_PERC,   KC_7,   KC_8,    KC_9,    KC_NO, KC_F12,
                 KC_EXLM, KC_4,   KC_5,    KC_6,    KC_0, KC_COMM,
        LSFT(KC_6), KC_DOT, KC_1,   KC_2,    KC_3,    KC_QUES, KC_NO,
                          KC_LT,JP_EQL,  KC_GT,    KC_NO,  KC_NO,

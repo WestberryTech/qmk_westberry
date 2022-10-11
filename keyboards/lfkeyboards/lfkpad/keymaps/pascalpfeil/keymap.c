@@ -29,7 +29,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     /* RGB */
     [1] = LAYOUT_numpad_6x4(
         RGB_SAI, RGB_VAI, RGB_HUI, _______,
-        RGB_SAD, RGB_VAD, RGB_HUD, RESET,
+        RGB_SAD, RGB_VAD, RGB_HUD, QK_BOOT,
         RGB_M_X, RGB_M_G, RGB_MOD,
         RGB_M_SW,RGB_M_SN,RGB_M_K, RGB_RMOD,
         RGB_M_P, RGB_M_B, RGB_M_R,
@@ -58,7 +58,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 
 const uint8_t number_leds[] = {8, 9, 10, 11, 12, 13, 15, 16, 17};
-const uint8_t number_leds_size = sizeof(number_leds) / sizeof(uint8_t);
+const uint8_t number_leds_size = ARRAY_SIZE(number_leds);
 
 bool led_update_user(led_t led_state) {
     for (uint8_t i = 0; i < number_leds_size; i++)

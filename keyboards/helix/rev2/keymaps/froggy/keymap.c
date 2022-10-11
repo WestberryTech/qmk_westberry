@@ -129,7 +129,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    * `------------------------------------------------'
    */
   [_FUNC] = LAYOUT_half( \
-      RGBRST,RGB_HUI, _______, RESET,   MAC,     WIN,               \
+      RGBRST,RGB_HUI, _______, QK_BOOT, MAC,     WIN,               \
       RGB1,  RGB_VAI, KC_F7,   KC_F8,   KC_F9,   _______,           \
       RGB2,  RGB_VAD, KC_F4,   KC_F5,   KC_F6,   KC_F12,            \
       RGB3,  KC_F10,  KC_F1,   KC_F2,   KC_F3,   KC_F11,   _______, \
@@ -347,24 +347,24 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
    case EISU:
       if (record->event.pressed) {
         if(keymap_config.swap_lalt_lgui==false){
-          register_code(KC_LANG2);
+          register_code(KC_LNG2);
         }else{
           SEND_STRING(SS_LALT("`"));
         }
       } else {
-        unregister_code(KC_LANG2);
+        unregister_code(KC_LNG2);
       }
       return false;
       break;
     case KANA:
       if (record->event.pressed) {
         if(keymap_config.swap_lalt_lgui==false){
-          register_code(KC_LANG1);
+          register_code(KC_LNG1);
         }else{
           SEND_STRING(SS_LALT("`"));
         }
       } else {
-        unregister_code(KC_LANG1);
+        unregister_code(KC_LNG1);
       }
       return false;
       break;

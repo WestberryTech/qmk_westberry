@@ -82,7 +82,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       _______, _______,     _______,    _______,    _______,       _______,      _______, _______, _______, _______, _______, _______, _______,          LGUI(KC_PAUSE),
       _______, TO(_GREEN_), TO(_BLUE_), TO(_CYAN_), TO(_MAGENTA_), TO(_YELLOW_), _______, _______, _______, _______, _______, _______, _______, TO(0),   _______,
       _______, _______,     _______,    _______,    _______,       _______,      _______, _______, _______, _______, _______, _______, _______, KC_VOLU, _______,
-      RESET,   _______,     _______,                               KC_LEAD,                                 _______, _______,          KC_MPLY, KC_VOLD, KC_MUTE
+      QK_BOOT, _______,     _______,                               KC_LEAD,                                 _______, _______,          KC_MPLY, KC_VOLD, KC_MUTE
       ),
 
 
@@ -249,9 +249,10 @@ void set_layer_color(int layer) {
   return;
 }
 
-void rgb_matrix_indicators_user(void) {
+bool rgb_matrix_indicators_user(void) {
   set_layer_color(get_highest_layer(layer_state));
 
+    return false;
 }
 
 #ifdef LEADER_ENABLE

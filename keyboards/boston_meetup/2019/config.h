@@ -1,8 +1,5 @@
 #pragma once
 
-/* USB Device descriptor parameter */
-#define DEVICE_VER 0x2019
-
 #undef MATRIX_ROWS
 #undef MATRIX_COLS
 /* key matrix size */
@@ -158,7 +155,7 @@
 
 #define RGBLED_NUM 10
 #define RGB_DI_PIN B5
-#define DRIVER_LED_TOTAL RGBLED_NUM
+#define RGB_MATRIX_LED_COUNT RGBLED_NUM
 
 #define RGB_MATRIX_KEYPRESSES
 

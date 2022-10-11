@@ -19,13 +19,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "config_common.h"
 
-/* USB Device descriptor parameter */
-#define VENDOR_ID       0xC0DE
-#define PRODUCT_ID      0x1337
-#define DEVICE_VER      0x0100
-#define MANUFACTURER    KgOfHedgehogs
-#define PRODUCT         Jian
-
 /* key matrix size */
 // Rows are doubled-up
 #define MATRIX_ROWS 8
@@ -36,8 +29,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define MATRIX_ROW_PINS { D3, D2, E6, B4 }
 #define MATRIX_COL_PINS { F4, F5, F6, F7, B1, B3, B2 }
 
-/* Use I2C or Serial, not both */
-// #define USE_SERIAL
 #define USE_I2C
 
 /* Select hand configuration */

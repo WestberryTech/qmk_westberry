@@ -27,7 +27,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   ),
 
   [1] = LAYOUT(
-       RESET,   _______,    _______,    _______,    _______,    _______,    _______,    _______,    _______,    _______,    _______,   _______,   _______,                                   _______,    _______,    _______,  _______,
+       QK_BOOT, _______,    _______,    _______,    _______,    _______,    _______,    _______,    _______,    _______,    _______,   _______,   _______,                                   _______,    _______,    _______,  _______,
 	  _______,   _______,     _______,     _______,     _______,     _______,     _______,     _______,     _______,     _______,     _______,     _______,  _______,   _______,            _______,    _______,    _______,  _______,
 	  RGB_MOD, 	     RGB_HUI,     RGB_VAI,     RGB_SAI,     RGB_SPI,     _______,     _______,     _______,     _______,     _______,     _______,     _______,  _______,  _______,         _______,    _______,    _______,  _______,
 	  RGB_TOG,          RGB_HUD,     RGB_VAD,     RGB_SAD,     RGB_SPD,     _______,     _______,     _______,     _______,     _______,     _______,  _______,  _______,                   _______,    _______,    _______,
@@ -46,7 +46,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 
 
-void rgb_matrix_indicators_user(void) {
+bool rgb_matrix_indicators_user(void) {
 
     led_t host_leds = host_keyboard_led_state();
     if (host_leds.num_lock) {
@@ -58,4 +58,5 @@ void rgb_matrix_indicators_user(void) {
     }
         //set_layer_color(get_highest_layer(layer_state));
 
+    return false;
 }

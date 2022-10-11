@@ -18,13 +18,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-/* USB Device descriptor parameter */
-#define VENDOR_ID       0xFEED
-#define PRODUCT_ID      0x3060
-#define DEVICE_VER      0x0001
-#define MANUFACTURER    RGBKB
-#define PRODUCT         Zygomorph
-
 /* Select hand configuration */
 #define EE_HANDS
 
@@ -56,7 +49,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     #define RGBLED_SPLIT { 30, 30 }
 #endif
 
-#define DRIVER_LED_TOTAL 60
+#define RGB_MATRIX_LED_COUNT 60
 #define RGB_MATRIX_SPLIT { 30, 30 }
 
 #ifdef IOS_DEVICE_ENABLE

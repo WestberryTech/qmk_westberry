@@ -5,11 +5,7 @@
 
 // Define the spi your LEDs are plugged to here
 #ifndef WS2812_SPI
-#    if defined(WB32F3G71xx) || defined(WB32FQ95xx)
-#        define WS2812_SPI SPIDQ
-#    else
-#        define WS2812_SPI SPID1
-#    endif
+#    define WS2812_SPI SPID1
 #endif
 
 #ifndef WS2812_SPI_MOSI_PAL_MODE
@@ -18,6 +14,10 @@
 
 #ifndef WS2812_SPI_SCK_PAL_MODE
 #    define WS2812_SPI_SCK_PAL_MODE 5
+#endif
+
+#ifndef WS2812_SPI_DIVISOR
+#    define WS2812_SPI_DIVISOR 16
 #endif
 
 // Push Pull or Open Drain Configuration
@@ -46,7 +46,7 @@
 #    define WS2812_SPI_DIVISOR_CR1_BR_X (SPI_CR1_BR_0)
 #elif WS2812_SPI_DIVISOR == 8
 #    define WS2812_SPI_DIVISOR_CR1_BR_X (SPI_CR1_BR_1)
-#elif WS2812_SPI_DIVISOR == 16 // same as default
+#elif WS2812_SPI_DIVISOR == 16 // default
 #    define WS2812_SPI_DIVISOR_CR1_BR_X (SPI_CR1_BR_1 | SPI_CR1_BR_0)
 #elif WS2812_SPI_DIVISOR == 32
 #    define WS2812_SPI_DIVISOR_CR1_BR_X (SPI_CR1_BR_2)
@@ -57,8 +57,7 @@
 #elif WS2812_SPI_DIVISOR == 256
 #    define WS2812_SPI_DIVISOR_CR1_BR_X (SPI_CR1_BR_2 | SPI_CR1_BR_1 | SPI_CR1_BR_0)
 #else
-#    define WS2812_SPI_DIVISOR_CR1_BR_X (SPI_CR1_BR_1 | SPI_CR1_BR_0) // default
-#    define WS2812_SPI_DIVISOR 16
+#    error "Configured WS2812_SPI_DIVISOR value is not supported at this time."
 #endif
 
 // Use SPI circular buffer
@@ -182,7 +181,7 @@ void ws2812_init(void) {
     spiStart(&WS2812_SPI, &spicfg); /* Setup transfer parameters.       */
     spiSelect(&WS2812_SPI);         /* Slave Select assertion.          */
 #ifdef WS2812_SPI_USE_CIRCULAR_BUFFER
-    spiStartSend(&WS2812_SPI, sizeof(txbuf) / sizeof(txbuf[0]), txbuf);
+    spiStartSend(&WS2812_SPI, ARRAY_SIZE(txbuf), txbuf);
 #endif
 }
 
@@ -201,9 +200,9 @@ void ws2812_setleds(LED_TYPE* ledarray, uint16_t leds) {
     // Instead spiSend can be used to send synchronously (or the thread logic can be added back).
 #ifndef WS2812_SPI_USE_CIRCULAR_BUFFER
 #    ifdef WS2812_SPI_SYNC
-    spiSend(&WS2812_SPI, sizeof(txbuf) / sizeof(txbuf[0]), txbuf);
+    spiSend(&WS2812_SPI, ARRAY_SIZE(txbuf), txbuf);
 #    else
-    spiStartSend(&WS2812_SPI, sizeof(txbuf) / sizeof(txbuf[0]), txbuf);
+    spiStartSend(&WS2812_SPI, ARRAY_SIZE(txbuf), txbuf);
 #    endif
 #endif
 }

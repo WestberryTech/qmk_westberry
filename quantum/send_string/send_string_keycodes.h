@@ -375,20 +375,6 @@
 #define X_MS_BTN6            f8
 #define X_MS_BTN7            f8
 #define X_MS_BTN8            f8
-#else
-#define X_MS_UP              ed
-#define X_MS_DOWN            ee
-#define X_MS_LEFT            ef
-#define X_MS_RIGHT           f0
-#define X_MS_BTN1            f1
-#define X_MS_BTN2            f2
-#define X_MS_BTN3            f3
-#define X_MS_BTN4            f4
-#define X_MS_BTN5            f5
-#define X_MS_BTN6            f6
-#define X_MS_BTN7            f7
-#define X_MS_BTN8            f8
-#endif
 #define X_MS_WH_UP           f9
 #define X_MS_WH_DOWN         fa
 #define X_MS_WH_LEFT         fb
@@ -396,6 +382,28 @@
 #define X_MS_ACCEL0          fd
 #define X_MS_ACCEL1          fe
 #define X_MS_ACCEL2          ff
+#else
+#define X_MS_UP              cd
+#define X_MS_DOWN            ce
+#define X_MS_LEFT            cf
+#define X_MS_RIGHT           d0
+#define X_MS_BTN1            d1
+#define X_MS_BTN2            d2
+#define X_MS_BTN3            d3
+#define X_MS_BTN4            d4
+#define X_MS_BTN5            d5
+#define X_MS_BTN6            d6
+#define X_MS_BTN7            d7
+#define X_MS_BTN8            d8
+#define X_MS_WH_UP           d9
+#define X_MS_WH_DOWN         da
+#define X_MS_WH_LEFT         db
+#define X_MS_WH_RIGHT        dc
+#define X_MS_ACCEL0          dd
+#define X_MS_ACCEL1          de
+#define X_MS_ACCEL2          df
+#endif
+
 
 // Send string macros
 #define STRINGIZE(z) #z
@@ -419,6 +427,7 @@
 #define SS_LSFT(string) SS_DOWN(X_LSFT) string SS_UP(X_LSFT)
 #define SS_LALT(string) SS_DOWN(X_LALT) string SS_UP(X_LALT)
 #define SS_LGUI(string) SS_DOWN(X_LGUI) string SS_UP(X_LGUI)
+#define SS_LOPT(string) SS_LALT(string)
 #define SS_LCMD(string) SS_LGUI(string)
 #define SS_LWIN(string) SS_LGUI(string)
 
@@ -427,6 +436,7 @@
 #define SS_RALT(string) SS_DOWN(X_RALT) string SS_UP(X_RALT)
 #define SS_RGUI(string) SS_DOWN(X_RGUI) string SS_UP(X_RGUI)
 #define SS_ALGR(string) SS_RALT(string)
+#define SS_ROPT(string) SS_RALT(string)
 #define SS_RCMD(string) SS_RGUI(string)
 #define SS_RWIN(string) SS_RGUI(string)
 

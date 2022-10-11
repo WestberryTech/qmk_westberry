@@ -58,7 +58,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_CAPS,    KC_A,           KC_S,               KC_D,       KC_F,       KC_G,       XXXXXXX,        XXXXXXX,  KC_H,       KC_J,       KC_K,       KC_L,       KC_SCLN,    KC_QUOT,
     KC_LSFT,    KC_Z,           KC_X,               KC_C,       KC_V,       KC_B,                                 KC_N,       KC_M,       KC_COMM,    KC_DOT,     KC_SLSH,    KC_RSFT,
     KC_LCTRL,   GUI_T(KC_GRV),  ALT_T(KC_BSLS),     KC_LEFT,    KC_RGHT,                                                      KC_UP,      KC_DOWN,    KC_LBRC,    KC_RBRC,    DF(SYMB),
-                                                                         CTL_T(KC_ESC), KC_LALT,        KC_RGUI, CTL_T(KC_HAEN),
+                                                                         CTL_T(KC_ESC), KC_LALT,        KC_RGUI, CTL_T(KC_LNG1),
                                                                                         KC_HOME,        KC_PGUP,
                                                                         KC_BSPC, KC_DEL, KC_END,        KC_PGDN, KC_ENT, KC_SPC
 ),
@@ -103,7 +103,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |--------+------+------+------+------+------|           |------+------+------+------+------+--------|
  * |        |      | Lclk | MsUp | Rclk |MsWhUp|           |      |      |      |      |      |        |
  * |--------+------+------+------+------+------|           |------+------+------+------+------+--------|
- * | RESET  |      |MsLeft|MsDown|MsRght|MsWhDw|           |      |      |      |      |      |        |
+ * | QK_BOOT  |      |MsLeft|MsDown|MsRght|MsWhDw|           |      |      |      |      |      |        |
  * |--------+------+------+------+------+------|           |------|------+------+------+------+--------|
  * | LShift |      |MsWhL |      |MsWhR |      |           |      |      |      |      |      | RShift |
  *  -------------------------------------------             -------------------------------------------
@@ -123,7 +123,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     XXXXXXX,    XXXXXXX,    XXXXXXX,    XXXXXXX,    XXXXXXX,      XXXXXXX,      XXXXXXX,       XXXXXXX,     XXXXXXX,    XXXXXXX,    XXXXXXX,  XXXXXXX,    XXXXXXX,    XXXXXXX,
     KC_SLEP,    KC_BRID,    KC_BRIU,    XXXXXXX,    XXXXXXX,      XXXXXXX,      KC_EJCT,       XXXXXXX,     KC_MPRV,    KC_MPLY,    KC_MNXT,  KC_MUTE,    KC_VOLD,    KC_VOLU,
     XXXXXXX,    XXXXXXX,    KC_BTN1,    KC_MS_U,    KC_BTN2,      KC_WH_U,      XXXXXXX,       XXXXXXX,     XXXXXXX,    XXXXXXX,    XXXXXXX,  XXXXXXX,    XXXXXXX,    XXXXXXX,
-    RESET,      XXXXXXX,    KC_MS_L,    KC_MS_D,    KC_MS_R,      KC_WH_D,      XXXXXXX,       XXXXXXX,     XXXXXXX,    XXXXXXX,    XXXXXXX,  XXXXXXX,    XXXXXXX,    XXXXXXX,
+    QK_BOOT,    XXXXXXX,    KC_MS_L,    KC_MS_D,    KC_MS_R,      KC_WH_D,      XXXXXXX,       XXXXXXX,     XXXXXXX,    XXXXXXX,    XXXXXXX,  XXXXXXX,    XXXXXXX,    XXXXXXX,
     _______,    XXXXXXX,    KC_WH_L,    XXXXXXX,    KC_WH_R,      XXXXXXX,                                  DF(SYMB),   XXXXXXX,    XXXXXXX,  XXXXXXX,    XXXXXXX,    XXXXXXX,
     _______,    _______,    _______,    _______,    _______,                                                            _______,    _______,  XXXXXXX,    XXXXXXX,    DF(BASE),
                                                                        _______, _______,        _______, _______,

@@ -76,14 +76,14 @@ static const encoder_key PROGMEM encoder_keys[] = {
     {"Teams", "Toggle", "Mic", KC_TEAMS_MUTE},
     {"Teams", "Toggle", "Cam", KC_TEAMS_CAM},
     {"Ctrl", "Alt", "Del", KC_CAD},
-    {"Caps", "Lock", "", KC_CAPSLOCK},
+    {"Caps", "Lock", "", KC_CAPS_LOCK},
     {"Pause", "", "", KC_PAUSE},
     {"PrtScr", "", "", KC_PSCR},
     {"Insert", "", "", KC_INS},
     {"Play", "", "", KC_MEDIA_PLAY_PAUSE}
 };
 
-#define NUMBER_OF_ENCODER_KEYS sizeof(encoder_keys)/sizeof(encoder_keys[0])
+#define NUMBER_OF_ENCODER_KEYS ARRAY_SIZE(encoder_keys)
 
 static uint8_t selected_encoder_key_id = 0;
 static encoder_key selected_encoder_key;
