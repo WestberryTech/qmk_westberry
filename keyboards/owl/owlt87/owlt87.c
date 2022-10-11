@@ -269,7 +269,7 @@ enum custom_keycodes {
   BT_DEV3,
   BT_2_4G,
   VIA_RST,
-  EEP_RST,
+  EE_RST,
 };
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
@@ -284,7 +284,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       break;
     }
-    case EEP_RST: {
+    case EE_RST: {
       eeconfig_disable();
       break;
     }
