@@ -121,8 +121,8 @@
 #define ENABLE_RGB_MATRIX_SOLID_SPLASH
 #define ENABLE_RGB_MATRIX_SOLID_MULTISPLASH
 
-/* Set debounce time to 5ms */
-#define DEBOUNCE 5
+/* Set debounce time to 3ms */
+#define DEBOUNCE 3
 
 /* Force NKRO on boot up regardless of the setting saved in the EEPROM (uncomment to enable it) */
 // #define FORCE_NKRO
