@@ -1,6 +1,12 @@
 {
-    "keyboard_name": "Proceee OWLT87",
-    "maintainer": "Proceee",
+    "keyboard_name": "T87",
+    "manufacturer": "OWL",
+    "maintainer": "OWL",
+    "usb": {
+        "vid": "0x3528",
+        "pid": "0x2332",
+        "device_version": "0.0.1"
+    },
     "layouts": {
         "LAYOUT": {
             "layout": [

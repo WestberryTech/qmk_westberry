@@ -21,13 +21,6 @@
 /* custom */
 #define ENABLE_CUSTOM_KEY
 
-/* USB Device descriptor parameter */
-#define DEVICE_VER 0x0001
-#define VENDOR_ID 0x3528
-#define PRODUCT_ID 0x2332
-#define MANUFACTURER Proceee
-#define PRODUCT OWLT87
-
 /* key matrix size */
 #define MATRIX_ROWS 10
 #define MATRIX_COLS 9
@@ -75,7 +68,7 @@
 
 #define DRIVER_1_LED_TOTAL 48
 #define DRIVER_2_LED_TOTAL 39
-#define DRIVER_LED_TOTAL (DRIVER_1_LED_TOTAL + DRIVER_2_LED_TOTAL)
+#define RGB_MATRIX_LED_COUNT (DRIVER_1_LED_TOTAL + DRIVER_2_LED_TOTAL)
 
 // RGB Matrix Animation modes. Explicitly enabled
 // For full list of effects, see:
@@ -110,9 +103,11 @@
 #define ENABLE_RGB_MATRIX_PIXEL_FLOW
 #define ENABLE_RGB_MATRIX_PIXEL_FRACTAL
 // enabled only if RGB_MATRIX_FRAMEBUFFER_EFFECTS is defined
+#define RGB_MATRIX_FRAMEBUFFER_EFFECTS
 #define ENABLE_RGB_MATRIX_TYPING_HEATMAP
 #define ENABLE_RGB_MATRIX_DIGITAL_RAIN
 // enabled only of RGB_MATRIX_KEYPRESSES or RGB_MATRIX_KEYRELEASES is defined
+#define RGB_MATRIX_KEYPRESSES
 #define ENABLE_RGB_MATRIX_SOLID_REACTIVE_SIMPLE
 #define ENABLE_RGB_MATRIX_SOLID_REACTIVE
 #define ENABLE_RGB_MATRIX_SOLID_REACTIVE_WIDE

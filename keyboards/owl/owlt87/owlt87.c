@@ -18,7 +18,7 @@
 
 #ifdef RGB_MATRIX_ENABLE
 
-const is31_led g_is31_leds[DRIVER_LED_TOTAL] = {
+const is31_led g_is31_leds[RGB_MATRIX_LED_COUNT] = {
  /* Refer to IS31 manual for these locations
  *   driver
  *   |  R location
@@ -255,10 +255,6 @@ bool led_update_kb(led_t led_state) {
         writePin(C11, !led_state.caps_lock);
     }
     return res;
-}
-
-void restart_usb_driver(USBDriver *usbp) {
-    // Do nothing. Restarting the USB driver on these boards breaks it.
 }
 
 #ifdef ENABLE_CUSTOM_KEY
