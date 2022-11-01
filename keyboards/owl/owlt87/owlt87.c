@@ -259,35 +259,104 @@ bool led_update_kb(led_t led_state) {
 
 #ifdef ENABLE_CUSTOM_KEY
 
-enum custom_keycodes {
-  BT_DEV1 = USER00,
-  BT_DEV2,
-  BT_DEV3,
-  BT_2_4G,
-  VIA_RST,
-  EE_RST,
-};
+typedef union {
+  uint32_t raw;
+  struct {
+    uint8_t dkey_states : 1;
+  };
+} confinfo_t;
+
+confinfo_t confinfo;
+uint32_t peek_close_rgb = 0;
+
+bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
+
+    if (peek_close_rgb & 0x10000) {
+        if (timer_elapsed(peek_close_rgb) <= 200) {
+            for (uint8_t idx = led_min; idx < led_max; idx++) {
+                rgb_matrix_set_color(idx, RGB_OFF);
+            }
+            return false;
+        } else {
+            peek_close_rgb = 0;
+        }
+    }
+
+    return true;
+}
+
+void matrix_init_user(void) {
+
+    confinfo.raw = eeconfig_read_user();
+}
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-  switch (keycode) {
-    case VIA_RST: {
-      if (record->event.pressed) {
-#ifdef VIA_ENABLE
-        #include "via.h"
-        via_eeprom_set_valid(false);
-        eeconfig_init_via();
-#endif
-      }
-      break;
+
+    switch (keycode) {
+        case VIA_RST: {
+            if (record->event.pressed) {
+#    ifdef VIA_ENABLE
+                #include "via.h"
+                via_eeprom_set_valid(false);
+                eeconfig_init_via();
+#    endif
+            }
+        } break;
+        case EE_RST: {
+            eeconfig_disable();
+        } break;
+        case RP_DKEY: {
+            if (record->event.pressed) {
+                confinfo.dkey_states = !confinfo.dkey_states;
+                peek_close_rgb = timer_read() | 0x10000;
+                eeconfig_update_user(confinfo.raw);
+                printf("remapping direction key to : %d\r\n", confinfo.dkey_states);
+            }
+        } break;
+        case KC_W: {
+            if (confinfo.dkey_states) {
+                if (record->event.pressed)
+                    register_code(KC_UP);
+                else
+                    unregister_code(KC_UP);
+                return false;
+            }
+            return true;
+        } break;
+        case KC_A: {
+            if (confinfo.dkey_states) {
+                if (record->event.pressed)
+                    register_code(KC_LEFT);
+                else
+                    unregister_code(KC_LEFT);
+                return false;
+            }
+            return true;
+        } break;
+        case KC_S: {
+            if (confinfo.dkey_states) {
+                if (record->event.pressed)
+                    register_code(KC_DOWN);
+                else
+                    unregister_code(KC_DOWN);
+                return false;
+            }
+            return true;
+        } break;
+        case KC_D: {
+            if (confinfo.dkey_states) {
+                if (record->event.pressed)
+                    register_code(KC_RIGHT);
+                else
+                    unregister_code(KC_RIGHT);
+                return false;
+            }
+            return true;
+        } break;
+        default: {
+            return true;
+        }
     }
-    case EE_RST: {
-      eeconfig_disable();
-      break;
-    }
-    default: {
-      return true;
-    }
-  }
 
   return false;
 }
