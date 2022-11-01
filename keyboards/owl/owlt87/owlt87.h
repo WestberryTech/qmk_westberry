@@ -18,18 +18,6 @@
 
 #include "quantum.h"
 
-#ifdef ENABLE_CUSTOM_KEY
-enum custom_keycodes {
-  BT_DEV1 = USER00,
-  BT_DEV2,
-  BT_DEV3,
-  BT_2_4G,
-  VIA_RST,
-  EE_RST,
-  RP_DKEY
-};
-#endif
-
 #define ___ KC_NO
 
 #define LAYOUT( \

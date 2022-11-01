@@ -15,6 +15,9 @@
  */
 
 #include "owlt87.h"
+#ifdef VIA_ENABLE
+#include "custom_key.h"
+#endif
 
 #ifdef RGB_MATRIX_ENABLE
 
@@ -282,6 +285,10 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
         }
     }
 
+    if (confinfo.dkey_states == true) {
+        rgb_matrix_set_color(35, RGB_WHITE); // KC_W
+    }
+
     return true;
 }
 
@@ -305,12 +312,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         case EE_RST: {
             eeconfig_disable();
         } break;
-        case RP_DKEY: {
+        case KC_RPDIR: {
             if (record->event.pressed) {
                 confinfo.dkey_states = !confinfo.dkey_states;
                 peek_close_rgb = timer_read() | 0x10000;
                 eeconfig_update_user(confinfo.raw);
-                printf("remapping direction key to : %d\r\n", confinfo.dkey_states);
             }
         } break;
         case KC_W: {

@@ -70,6 +70,8 @@
 #define DRIVER_2_LED_TOTAL 39
 #define RGB_MATRIX_LED_COUNT (DRIVER_1_LED_TOTAL + DRIVER_2_LED_TOTAL)
 
+// #define RGB_TRIGGER_ON_KEYDOWN
+
 // RGB Matrix Animation modes. Explicitly enabled
 // For full list of effects, see:
 // https://docs.qmk.fm/#/feature_rgb_matrix?id=rgb-matrix-effects
