@@ -18,4 +18,4 @@
 
 #include "config_common.h"
 
-#define USB_ENDPOINTS_ARE_REORDERABLE
+#define DYNAMIC_KEYMAP_LAYER_COUNT 6
