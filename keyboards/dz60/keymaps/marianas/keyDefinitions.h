@@ -4,7 +4,7 @@
 #define BACKSPC KC_BSPC
 #define ENTER_OR_SQL LT(SQLMACROS,KC_ENT)
 #define ESCAP KC_ESC
-#define PSCR KC_PSCREEN
+#define PSCR KC_PSCR
 #define SCRL KC_SCRL
 #define PAUS KC_PAUSE
 #define NSRT KC_INSERT
@@ -39,11 +39,11 @@
 
 //Modifiers
 #define CTLL KC_LCTL
-#define LEFTSHFT KC_LSPO
+#define LEFTSHFT SC_LSPO
 #define WINL KC_LGUI
 #define ALTL KC_LALT
 #define CTLR KC_RCTL
-#define RIGHT_SHIFT__PAREN KC_RSPC
+#define RIGHT_SHIFT__PAREN SC_RSPC
 #define WINR KC_RGUI
 #define ALTR KC_RALT
 #define APPR KC_APP
