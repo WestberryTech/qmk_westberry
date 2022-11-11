@@ -18,7 +18,7 @@
 #include "custom_key.h"
 
 enum layers{
-    WIN_BASE,
+    WIN_BASE = 0,
     WIN_FN,
     MAC_BASE,
     MAC_FN
@@ -41,7 +41,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______,  _______,      KC_RPDIR, _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,    _______,    _______,   _______,
         _______,  _______,      _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,    _______,               _______,
         _______,  _______,      _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,                           RGB_TOG,
-        _______,  TO(MAC_BASE), _______,                                _______,                                _______,  _______,    _______,    RGB_RMOD,  RGB_TOG,  RGB_MOD),
+        _______,  DF(MAC_BASE), _______,                                _______,                                _______,  _______,    _______,    RGB_RMOD,  RGB_TOG,  RGB_MOD),
 
     [MAC_BASE] = LAYOUT( /* Base */
         KC_ESC,   KC_BRID,      KC_BRIU,  KC_MCTL,  KC_LPAD,  RGB_VAD,  RGB_VAI,  KC_MPRV,  KC_MPLY,  KC_MNXT,  KC_MUTE,  KC_VOLD,    KC_VOLU,    KC_DEL,
@@ -57,7 +57,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         RGB_TOG,  RGB_VAI,      KC_RPDIR, RGB_HUI,  RGB_SAI,  RGB_SPI,  _______,  _______,  _______,  _______,  _______,  _______,    _______,    _______,  _______,
         _______,  RGB_VAD,      RGB_VAD,  RGB_HUD,  RGB_SAD,  RGB_SPD,  _______,  _______,  _______,  _______,  _______,  _______,    _______,              _______,
         _______,  _______,      _______,  _______,  _______,  _______,  NK_TOGG,  _______,  _______,  _______,  _______,  _______,                          RGB_TOG,
-        _______,  _______,  TO(WIN_BASE),                               _______,                                _______,  _______,    _______,    RGB_RMOD, RGB_TOG,  RGB_MOD)
+        _______,  _______,  DF(WIN_BASE),                               _______,                                _______,  _______,    _______,    RGB_RMOD, RGB_TOG,  RGB_MOD)
 };
 // clang-format on
 
@@ -68,10 +68,9 @@ bool rgb_matrix_indicators_advanced_kb(uint8_t led_min, uint8_t led_max) {
         return false;
     }
 
-    if (layer_state_is(WIN_BASE) | layer_state_is(WIN_FN)) {
+    if (IS_LAYER_ON(WIN_BASE) || IS_LAYER_ON(WIN_FN)) {
         rgb_matrix_set_color(72, 0x57, 0x77, 0x77);
-        return false;
-    } else if (layer_state_is(MAC_BASE) | layer_state_is(MAC_FN)) {
+    } else if (IS_LAYER_ON(MAC_BASE) || IS_LAYER_ON(MAC_FN)) {
         rgb_matrix_set_color(73, 0x57, 0x77, 0x77);
     }
 
