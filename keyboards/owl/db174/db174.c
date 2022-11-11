@@ -257,7 +257,7 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     }
 
     if (confinfo.dkey_states == true) {
-        rgb_matrix_set_color(31, RGB_WHITE); // KC_W
+        rgb_matrix_set_color(31, 0x57, 0x77, 0x77); // KC_W
     }
 
     return true;
