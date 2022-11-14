@@ -68,9 +68,9 @@ bool rgb_matrix_indicators_advanced_kb(uint8_t led_min, uint8_t led_max) {
         return false;
     }
 
-    if (IS_LAYER_ON(WIN_BASE) || IS_LAYER_ON(WIN_FN)) {
+    if (IS_LAYER_ON_STATE(default_layer_state | layer_state, WIN_BASE) || IS_LAYER_ON_STATE(default_layer_state | layer_state, WIN_FN)) {
         rgb_matrix_set_color(72, 0x57, 0x77, 0x77);
-    } else if (IS_LAYER_ON(MAC_BASE) || IS_LAYER_ON(MAC_FN)) {
+    } else if (IS_LAYER_ON_STATE(default_layer_state | layer_state, MAC_BASE) || IS_LAYER_ON_STATE(default_layer_state | layer_state, MAC_FN)) {
         rgb_matrix_set_color(73, 0x57, 0x77, 0x77);
     }
 
@@ -83,6 +83,21 @@ void housekeeping_task_user(void) {
 }
 
 bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
+
+    switch (keycode) {
+        case DF(MAC_BASE): {
+            if (record->event.pressed) {
+                set_single_persistent_default_layer(MAC_BASE);
+                return false;
+            }
+        } break;
+        case DF(WIN_BASE): {
+            if (record->event.pressed) {
+                set_single_persistent_default_layer(WIN_BASE);
+                return false;
+            }
+        } break;
+    }
 
     if (!process_record_custom(keycode, record)) {
         return false;
