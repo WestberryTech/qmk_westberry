@@ -18,6 +18,10 @@
 
 #include "config_common.h"
 
+#define NO_USB_STARTUP_CHECK
+
+#define RGB_MATRIX_STARTUP_MODE 1
+
 /* custom */
 #define ENABLE_CUSTOM_KEY
 

@@ -68,9 +68,9 @@ bool rgb_matrix_indicators_advanced_kb(uint8_t led_min, uint8_t led_max) {
         return false;
     }
 
-    if (IS_LAYER_ON_STATE(default_layer_state | layer_state, WIN_BASE) || IS_LAYER_ON_STATE(default_layer_state | layer_state, WIN_FN)) {
+    if ((get_highest_layer(default_layer_state | layer_state) == WIN_BASE) || (get_highest_layer(default_layer_state | layer_state) == WIN_FN)) {
         rgb_matrix_set_color(72, 0x57, 0x77, 0x77);
-    } else if (IS_LAYER_ON_STATE(default_layer_state | layer_state, MAC_BASE) || IS_LAYER_ON_STATE(default_layer_state | layer_state, MAC_FN)) {
+    } else if ((get_highest_layer(default_layer_state | layer_state) == MAC_BASE) || (get_highest_layer(default_layer_state | layer_state) == MAC_FN)) {
         rgb_matrix_set_color(73, 0x57, 0x77, 0x77);
     }
 
@@ -113,7 +113,7 @@ bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
 void keyboard_post_init_user(void) {
     // Customise these values to desired behaviour
     debug_enable=true;
-    debug_matrix=true;
+    // debug_matrix=true;
     //debug_keyboard=true;
     //debug_mouse=true;
 }

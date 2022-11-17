@@ -286,10 +286,14 @@ static void wb32_pwm_init(void) {
 
 OSAL_IRQ_HANDLER(WB32_TIM1_UP_IRQ_VECTOR) {
 
-    if (TIM1->SR & TIM_SR_UIF) {
-        TIM1->SR = ~TIM_SR_UIF;
-        gpt1cb();
-    }
+  OSAL_IRQ_PROLOGUE();
+
+  if (TIM1->SR & TIM_SR_UIF) {
+    TIM1->SR = ~TIM_SR_UIF;
+    gpt1cb();
+  }
+
+  OSAL_IRQ_EPILOGUE();
 }
 
 static void wb32_gpt_start(void) {
@@ -405,6 +409,12 @@ static void WB003_set_color(int index, uint8_t red, uint8_t green, uint8_t blue)
   wb003_led led;
 
   memcpy_P(&led, (&g_wb003_leds[index]), sizeof(led));
+
+#define BRIGHTNESS_LIMIT 0
+
+  red = (red > BRIGHTNESS_LIMIT) ? (red - BRIGHTNESS_LIMIT) : 0;
+  green = (green > BRIGHTNESS_LIMIT) ? (green - BRIGHTNESS_LIMIT) : 0;
+  blue = (blue > BRIGHTNESS_LIMIT) ? (blue - BRIGHTNESS_LIMIT) : 0;
 
   if (g_pwm_buffer[led.sw][led.id].r != red) {
     g_pwm_buffer[led.sw][led.id].r = red;
