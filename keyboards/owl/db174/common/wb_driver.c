@@ -1,3 +1,14 @@
+/**
+ * @file      wb_driver.c
+ * @brief     This driver is used to drive rgb matrix and key matrix
+ *            in a way that uses WB32 MCU's internal resources.
+ * @author    Joy
+ * @version   1.0.0
+ * @date      2022-11-29
+ *
+ * @copyright Copyright (c) 2022 Westberry Technology (ChangZhou) Corp., Ltd
+ */
+
 #include QMK_KEYBOARD_H
 #include <string.h>
 #include "util.h"
@@ -5,15 +16,10 @@
 #include "debounce.h"
 #include "quantum.h"
 #include "rgb_matrix.h"
-#include "rgb_driver.h"
+#include "wb_driver.h"
 
-#define SCAN_PWM_FREQ 65536 // 31250
-
-typedef struct {
-    uint8_t r;
-    uint8_t g;
-    uint8_t b;
-} __attribute__((packed)) rgb_t;
+// Configure the RGB and key scan frequency in Hz
+#define SCAN_PWM_FREQ 31250 // 31250
 
 static volatile uint32_t sw_scan_index = 0;
 static volatile uint32_t sw_line_active = 0;
@@ -21,57 +27,109 @@ static matrix_row_t rt_matrix[MATRIX_ROWS] = {0};
 static pin_t row_pins[MATRIX_ROWS] = MATRIX_ROW_PINS;
 static pin_t col_pins[MATRIX_COLS] = MATRIX_COL_PINS;
 
-__IO rgb_t g_pwm_buffer[MATRIX_ROWS][5] = {0};
+wbrgb_t g_pwm_buffer[MATRIX_ROWS][5] = {0};
+__IO wbrgb_t g_flush_buffer[MATRIX_ROWS][5] = {0};
 
-static void gpt1cb(void);
 static bool select_row(uint8_t row);
 static void unselect_row(uint8_t row);
 static void rt_matrix_read_cols_on_row(matrix_row_t current_matrix[], uint8_t current_row);
 
-static void gpt1cb(void) {
+static void wb32_pwm_pin_init(void) {
 
-  if (sw_line_active == 0) {
-    rgb_t color;
+  /*
+    PA8  (TIM1_CH1)
+    PA9  (TIM1_CH2)
+    PA10 (TIM1_CH3)
+  */
+  palSetPadMode(PAL_PORT(A8), PAL_PAD(A8), PAL_MODE_ALTERNATE(1));
+  palSetPadMode(PAL_PORT(A9), PAL_PAD(A9), PAL_MODE_ALTERNATE(1));
+  palSetPadMode(PAL_PORT(A10), PAL_PAD(A10), PAL_MODE_ALTERNATE(1));
+  /*
+    PA0  (TIM2_CH1)
+    PA1  (TIM2_CH2)
+    PA2  (TIM2_CH3)
+    PA3  (TIM2_CH4)
+  */
+  palSetPadMode(PAL_PORT(A0), PAL_PAD(A0), PAL_MODE_ALTERNATE(1));
+  palSetPadMode(PAL_PORT(A1), PAL_PAD(A1), PAL_MODE_ALTERNATE(1));
+  palSetPadMode(PAL_PORT(A2), PAL_PAD(A2), PAL_MODE_ALTERNATE(1));
+  palSetPadMode(PAL_PORT(A3), PAL_PAD(A3), PAL_MODE_ALTERNATE(1));
+  /*
+    PA6  (TIM3_CH1)
+    PA7  (TIM3_CH2)
+    PC8  (TIM3_CH3)
+    PC9  (TIM3_CH4)
+  */
+  palSetPadMode(PAL_PORT(A6), PAL_PAD(A6), PAL_MODE_ALTERNATE(2));
+  palSetPadMode(PAL_PORT(A7), PAL_PAD(A7), PAL_MODE_ALTERNATE(2));
+  palSetPadMode(PAL_PORT(C8), PAL_PAD(C8), PAL_MODE_ALTERNATE(2));
+  palSetPadMode(PAL_PORT(C9), PAL_PAD(C9), PAL_MODE_ALTERNATE(2));
+  /*
+    PB6  (TIM4_CH1)
+    PB7  (TIM4_CH2)
+    PB8  (TIM4_CH3)
+    PB9  (TIM4_CH4)
+  */
+  palSetPadMode(PAL_PORT(B6), PAL_PAD(B6), PAL_MODE_ALTERNATE(2));
+  palSetPadMode(PAL_PORT(B7), PAL_PAD(B7), PAL_MODE_ALTERNATE(2));
+  palSetPadMode(PAL_PORT(B8), PAL_PAD(B8), PAL_MODE_ALTERNATE(2));
+  palSetPadMode(PAL_PORT(B9), PAL_PAD(B9), PAL_MODE_ALTERNATE(2));
+}
 
-    TIM1->ARR = 255;
-    select_row(sw_scan_index);
-    sw_line_active = 1;
+/* !!! The following content is the driving content and does not need to be changed by the user.  !!! */
 
-    color      = g_pwm_buffer[sw_scan_index][0];
-    TIM1->CCR1 = 256 - color.r;
-    TIM1->CCR2 = 256 - color.g;
-    TIM1->CCR3 = 256 - color.b;
-    color      = g_pwm_buffer[sw_scan_index][1];
-    TIM2->CCR1 = 256 - color.r;
-    TIM2->CCR2 = 256 - color.g;
-    TIM2->CCR3 = 256 - color.b;
-    color      = g_pwm_buffer[sw_scan_index][2];
-    TIM2->CCR4 = 256 - color.r;
-    TIM3->CCR1 = 256 - color.g;
-    TIM3->CCR2 = 256 - color.b;
-    color      = g_pwm_buffer[sw_scan_index][3];
-    TIM3->CCR3 = 256 - color.r;
-    TIM3->CCR4 = 256 - color.g;
-    TIM4->CCR1 = 256 - color.b;
-    color      = g_pwm_buffer[sw_scan_index][4];
-    TIM4->CCR2 = 256 - color.r;
-    TIM4->CCR3 = 256 - color.g;
-    TIM4->CCR4 = 256 - color.b;
+OSAL_IRQ_HANDLER(WB32_TIM1_UP_IRQ_VECTOR) {
 
-    TIM1->CCER |= TIM_CCER_CC1E | TIM_CCER_CC2E | TIM_CCER_CC3E;
-    TIM4->CR1 |= TIM_CR1_CEN;
-    TIM3->CR1 |= TIM_CR1_CEN;
-    TIM2->CR1 |= TIM_CR1_CEN;
-  } else {
-    rt_matrix_read_cols_on_row(rt_matrix, sw_scan_index);
-    unselect_row(sw_scan_index);
-    sw_line_active = 0;
-    sw_scan_index  = (sw_scan_index + 1) % MATRIX_ROWS;
-    TIM1->CCER &= ~(TIM_CCER_CC1E | TIM_CCER_CC2E | TIM_CCER_CC3E);
-    TIM1->ARR = 100;
+  OSAL_IRQ_PROLOGUE();
+
+  if (TIM1->SR & TIM_SR_UIF) {
+    TIM1->SR = ~TIM_SR_UIF;
+
+    if (sw_line_active == 0) {
+      wbrgb_t color;
+
+      TIM1->ARR = 255;
+      select_row(sw_scan_index);
+      sw_line_active = 1;
+
+      color      = g_flush_buffer[sw_scan_index][0];
+      TIM1->CCR1 = 256 - color.r;
+      TIM1->CCR2 = 256 - color.g;
+      TIM1->CCR3 = 256 - color.b;
+      color      = g_flush_buffer[sw_scan_index][1];
+      TIM2->CCR1 = 256 - color.r;
+      TIM2->CCR2 = 256 - color.g;
+      TIM2->CCR3 = 256 - color.b;
+      color      = g_flush_buffer[sw_scan_index][2];
+      TIM2->CCR4 = 256 - color.r;
+      TIM3->CCR1 = 256 - color.g;
+      TIM3->CCR2 = 256 - color.b;
+      color      = g_flush_buffer[sw_scan_index][3];
+      TIM3->CCR3 = 256 - color.r;
+      TIM3->CCR4 = 256 - color.g;
+      TIM4->CCR1 = 256 - color.b;
+      color      = g_flush_buffer[sw_scan_index][4];
+      TIM4->CCR2 = 256 - color.r;
+      TIM4->CCR3 = 256 - color.g;
+      TIM4->CCR4 = 256 - color.b;
+
+      TIM1->CCER |= TIM_CCER_CC1E | TIM_CCER_CC2E | TIM_CCER_CC3E;
+      TIM4->CR1 |= TIM_CR1_CEN;
+      TIM3->CR1 |= TIM_CR1_CEN;
+      TIM2->CR1 |= TIM_CR1_CEN;
+    } else {
+      rt_matrix_read_cols_on_row(rt_matrix, sw_scan_index);
+      unselect_row(sw_scan_index);
+      sw_line_active = 0;
+      sw_scan_index  = (sw_scan_index + 1) % MATRIX_ROWS;
+      TIM1->CCER &= ~(TIM_CCER_CC1E | TIM_CCER_CC2E | TIM_CCER_CC3E);
+      TIM1->ARR = 100;
+    }
+
+    TIM1->CR1 |= TIM_CR1_CEN;
   }
 
-  TIM1->CR1 |= TIM_CR1_CEN;
+  OSAL_IRQ_EPILOGUE();
 }
 
 static void wb32_tim_base_init(TIM_TypeDef *TIMx) {
@@ -88,8 +146,7 @@ static void wb32_tim_base_init(TIM_TypeDef *TIMx) {
 
   TIMx->ARR = 255;
 
-  TIMx->PSC = ((WB32_TIMCLK1 / SCAN_PWM_FREQ) / 256) - 1;
-  ;
+  TIMx->PSC = (WB32_TIMCLK1 / SCAN_PWM_FREQ / (255 + 1)) - 1;
 
   TIMx->EGR = 0x01;
 
@@ -284,64 +341,66 @@ static void wb32_pwm_init(void) {
   TIM1->BDTR |= TIM_BDTR_MOE;
 }
 
-OSAL_IRQ_HANDLER(WB32_TIM1_UP_IRQ_VECTOR) {
+static void wbrgb_init(void) {
+  rgb_driver_init();
+}
 
-  OSAL_IRQ_PROLOGUE();
+static void wbrgb_flush(void) {
 
-  if (TIM1->SR & TIM_SR_UIF) {
-    TIM1->SR = ~TIM_SR_UIF;
-    gpt1cb();
+  memcpy((void *)g_flush_buffer, (void *)g_pwm_buffer, sizeof(g_flush_buffer));
+}
+
+static void wbrgb_set_color(int index, uint8_t red, uint8_t green, uint8_t blue) {
+  wb_led led;
+
+  memcpy_P(&led, (&g_wb_leds[index]), sizeof(led));
+
+#define BRIGHTNESS_LIMIT 0
+
+  red = (red > BRIGHTNESS_LIMIT) ? (red - BRIGHTNESS_LIMIT) : 0;
+  green = (green > BRIGHTNESS_LIMIT) ? (green - BRIGHTNESS_LIMIT) : 0;
+  blue = (blue > BRIGHTNESS_LIMIT) ? (blue - BRIGHTNESS_LIMIT) : 0;
+
+  if (g_pwm_buffer[led.sw][led.id].r != red) {
+    g_pwm_buffer[led.sw][led.id].r = red;
   }
-
-  OSAL_IRQ_EPILOGUE();
+  if (g_pwm_buffer[led.sw][led.id].g != green) {
+    g_pwm_buffer[led.sw][led.id].g = green;
+  }
+  if (g_pwm_buffer[led.sw][led.id].b != blue) {
+    g_pwm_buffer[led.sw][led.id].b = blue;
+  }
 }
 
-static void wb32_gpt_start(void) {
+static void wbrgb_set_color_all(uint8_t red, uint8_t green, uint8_t blue) {
 
-  TIM1->CR1 |= TIM_CR1_CEN;
+  for (uint8_t i = 0; i < RGB_MATRIX_LED_COUNT; i++) {
+    wbrgb_set_color(i, red, green, blue);
+  }
 }
 
-static void wb32_pwm_pin_init(void) {
+const rgb_matrix_driver_t rgb_matrix_driver = {
+  .init          = wbrgb_init,
+  .flush         = wbrgb_flush,
+  .set_color     = wbrgb_set_color,
+  .set_color_all = wbrgb_set_color_all
+};
 
-  /*
-    PA8  (TIM1_CH1)
-    PA9  (TIM1_CH2)
-    PA10 (TIM1_CH3)
-  */
-  palSetPadMode(PAL_PORT(A8), PAL_PAD(A8), PAL_MODE_ALTERNATE(1));
-  palSetPadMode(PAL_PORT(A9), PAL_PAD(A9), PAL_MODE_ALTERNATE(1));
-  palSetPadMode(PAL_PORT(A10), PAL_PAD(A10), PAL_MODE_ALTERNATE(1));
-  /*
-    PA0  (TIM2_CH1)
-    PA1  (TIM2_CH2)
-    PA2  (TIM2_CH3)
-    PA3  (TIM2_CH4)
-  */
-  palSetPadMode(PAL_PORT(A0), PAL_PAD(A0), PAL_MODE_ALTERNATE(1));
-  palSetPadMode(PAL_PORT(A1), PAL_PAD(A1), PAL_MODE_ALTERNATE(1));
-  palSetPadMode(PAL_PORT(A2), PAL_PAD(A2), PAL_MODE_ALTERNATE(1));
-  palSetPadMode(PAL_PORT(A3), PAL_PAD(A3), PAL_MODE_ALTERNATE(1));
-  /*
-    PA6  (TIM3_CH1)
-    PA7  (TIM3_CH2)
-    PC8  (TIM3_CH3)
-    PC9  (TIM3_CH4)
-  */
-  palSetPadMode(PAL_PORT(A6), PAL_PAD(A6), PAL_MODE_ALTERNATE(2));
-  palSetPadMode(PAL_PORT(A7), PAL_PAD(A7), PAL_MODE_ALTERNATE(2));
-  palSetPadMode(PAL_PORT(C8), PAL_PAD(C8), PAL_MODE_ALTERNATE(2));
-  palSetPadMode(PAL_PORT(C9), PAL_PAD(C9), PAL_MODE_ALTERNATE(2));
-  /*
-    PB6  (TIM4_CH1)
-    PB7  (TIM4_CH2)
-    PB8  (TIM4_CH3)
-    PB9  (TIM4_CH4)
-  */
-  palSetPadMode(PAL_PORT(B6), PAL_PAD(B6), PAL_MODE_ALTERNATE(2));
-  palSetPadMode(PAL_PORT(B7), PAL_PAD(B7), PAL_MODE_ALTERNATE(2));
-  palSetPadMode(PAL_PORT(B8), PAL_PAD(B8), PAL_MODE_ALTERNATE(2));
-  palSetPadMode(PAL_PORT(B9), PAL_PAD(B9), PAL_MODE_ALTERNATE(2));
+void rgb_driver_init(void) {
+  static bool is_initialised = false;
+
+  if (!is_initialised) {
+    is_initialised = true;
+    wb32_pwm_init();
+    wb32_pwm_pin_init();
+    // Start TIM1.
+    TIM1->CR1 |= TIM_CR1_CEN;
+    wbrgb_set_color_all(0x00, 0x00, 0x00);
+  }
 }
+
+
+/* The following is Key Matrix related. */
 
 static inline uint8_t readMatrixPin(pin_t pin) {
   if (pin != NO_PIN) {
@@ -392,65 +451,9 @@ static void rt_matrix_read_cols_on_row(matrix_row_t current_matrix[], uint8_t cu
   current_matrix[current_row] = current_row_value;
 }
 
-void wb003_init(pin_t cs_pin, pin_t en_pin);
-void wb003_set_color(int index, uint8_t red, uint8_t green, uint8_t blue);
-void wb003_set_color_all(uint8_t red, uint8_t green, uint8_t blue);
-void wb003_update_pwm_buffers(pin_t cs_pin, uint8_t index);
+void matrix_read_cols_on_row(matrix_row_t current_matrix[], uint8_t current_row) {
 
-static void init(void) {
-  rgb_driver_init();
-}
-
-static void flush(void) {
-  /* Execute in gpt1tb */
-}
-
-static void WB003_set_color(int index, uint8_t red, uint8_t green, uint8_t blue) {
-  wb003_led led;
-
-  memcpy_P(&led, (&g_wb003_leds[index]), sizeof(led));
-
-#define BRIGHTNESS_LIMIT 0
-
-  red = (red > BRIGHTNESS_LIMIT) ? (red - BRIGHTNESS_LIMIT) : 0;
-  green = (green > BRIGHTNESS_LIMIT) ? (green - BRIGHTNESS_LIMIT) : 0;
-  blue = (blue > BRIGHTNESS_LIMIT) ? (blue - BRIGHTNESS_LIMIT) : 0;
-
-  if (g_pwm_buffer[led.sw][led.id].r != red) {
-    g_pwm_buffer[led.sw][led.id].r = red;
-  }
-  if (g_pwm_buffer[led.sw][led.id].g != green) {
-    g_pwm_buffer[led.sw][led.id].g = green;
-  }
-  if (g_pwm_buffer[led.sw][led.id].b != blue) {
-    g_pwm_buffer[led.sw][led.id].b = blue;
-  }
-}
-
-static void WB003_set_color_all(uint8_t red, uint8_t green, uint8_t blue) {
-
-  for (uint8_t i = 0; i < RGB_MATRIX_LED_COUNT; i++) {
-    WB003_set_color(i, red, green, blue);
-  }
-}
-
-const rgb_matrix_driver_t rgb_matrix_driver = {
-  .init          = init,
-  .flush         = flush,
-  .set_color     = WB003_set_color,
-  .set_color_all = WB003_set_color_all
-};
-
-void rgb_driver_init(void) {
-  static bool is_initialised = false;
-
-  if (!is_initialised) {
-    is_initialised = true;
-    wb32_pwm_init();
-    wb32_pwm_pin_init();
-    wb32_gpt_start();
-    WB003_set_color_all(0x00, 0x00, 0x00);
-  }
+  current_matrix[current_row] = rt_matrix[current_row];
 }
 
 void matrix_init_pins(void) {
@@ -463,7 +466,30 @@ void matrix_init_pins(void) {
   }
 }
 
-void matrix_read_cols_on_row(matrix_row_t current_matrix[], uint8_t current_row) {
+#ifdef BOOTMAGIC_LITE
+void bootmagic_lite(void) {
+    uint8_t row = BOOTMAGIC_LITE_ROW;
+    uint8_t col = BOOTMAGIC_LITE_COLUMN;
 
-  current_matrix[current_row] = rt_matrix[current_row];
+    select_row(row);
+    rt_matrix_read_cols_on_row(rt_matrix, row);
+    unselect_row(row);
+
+#if defined(DEBOUNCE) && DEBOUNCE > 0
+    wait_ms(DEBOUNCE * 2);
+#else
+    wait_ms(30);
+#endif
+
+    select_row(row);
+    rt_matrix_read_cols_on_row(rt_matrix, row);
+    unselect_row(row);
+
+    if (rt_matrix[row] & (1 << col)) {
+        eeconfig_disable();
+
+        // Jump to bootloader.
+        bootloader_jump();
+    }
 }
+#endif

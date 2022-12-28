@@ -21,11 +21,17 @@
 #include "progmem.h"
 #include "quantum.h"
 
-typedef struct wb003_led {
+typedef struct {
+    uint8_t r;
+    uint8_t g;
+    uint8_t b;
+} __attribute__((packed)) wbrgb_t;
+
+typedef struct wb_led {
     uint8_t sw: 5;
     uint8_t id: 3;
-} __attribute__((packed)) wb003_led;
+} __attribute__((packed)) wb_led;
 
-extern const wb003_led PROGMEM g_wb003_leds[RGB_MATRIX_LED_COUNT];
+extern const wb_led PROGMEM g_wb_leds[RGB_MATRIX_LED_COUNT];
 
 void rgb_driver_init(void);
