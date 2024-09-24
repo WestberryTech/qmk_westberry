@@ -24,6 +24,7 @@
 #include "util.h"
 #include "led_tables.h"
 #include <lib/lib8tion/lib8tion.h>
+
 #ifdef EEPROM_ENABLE
 #    include "eeprom.h"
 #endif
@@ -243,7 +244,7 @@ void rgblight_init(void) {
 
     rgblight_timer_init(); // setup the timer
 
-    rgblight_driver.init();
+    // rgblight_driver.init();
 
     if (rgblight_config.enable) {
         rgblight_mode_noeeprom(rgblight_config.mode);
@@ -896,6 +897,8 @@ void rgblight_wakeup(void) {
 
 #endif
 
+#ifndef RGBLIGHT_CUSTOM_DRIVER
+
 void rgblight_set(void) {
     rgb_led_t *start_led;
     uint8_t    num_leds = rgblight_ranges.clipping_num_leds;
@@ -940,6 +943,8 @@ void rgblight_set(void) {
 #endif
     rgblight_driver.setleds(start_led, num_leds);
 }
+
+#endif
 
 #ifdef RGBLIGHT_SPLIT
 /* for split keyboard master side */
@@ -1193,20 +1198,122 @@ static uint8_t breathe_calc(uint8_t pos) {
 
 __attribute__((weak)) const uint8_t RGBLED_BREATHING_INTERVALS[] PROGMEM = {30, 20, 10, 5};
 
-void rgblight_effect_breathing(animation_status_t *anim) {
-    uint8_t val = breathe_calc(anim->pos);
-    rgblight_sethsv_noeeprom_old(rgblight_config.hue, rgblight_config.sat, val);
-    anim->pos = (anim->pos + 1);
-}
+    #ifdef CUSTOM_RGBLIGHT_EFFECT_BREATHE_TABLE
+    void rgblight_effect_breathing(animation_status_t *anim) {
+    static uint8_t i,r,g,b,dir; 
+        switch(i){
+        case 0:if (dir == 0) {
+            if (r < breathing_val -1) r+=2;
+            else r++;
+            }
+                if(r == breathing_val) dir = 1;
+                if (dir == 1) {
+                        if (r>1) r-=2;
+                else r--;
+                        if(r == 0) {dir = 0;i=1;}
+                    }break;
+        case 1:if (dir == 0){ 
+                if(g <breathing_val - 1) g+=2;
+            else g++;
+            }
+                if(g == breathing_val) dir = 1;
+                if (dir == 1) {
+                        if (g>1) g-=2;
+                        else g--;
+                        if(g == 0) {dir = 0;i=2;}
+                }break;
+        case 2:if (dir == 0){
+                if (b < breathing_val - 1) b+=2;
+                    else b++;
+            }
+                if(b == breathing_val) dir = 1;
+                if (dir == 1) {
+                        if (b>1) b-=2;
+                        else b--;
+
+                if(b == 0) {dir = 0;i=3;}
+                    }break;
+        case 3:if (dir == 0) {
+            if (r <breathing_val - 1)  {r+=2;b+=2;}
+            else {r++;b++;}
+            }
+                if(r == breathing_val) dir = 1;
+                if (dir == 1) {
+                        if (r>1) {r-=2;b-=2;}
+                else {r--;b--;}
+                        if(r == 0) {dir = 0;i=4;}
+                    }break;
+        case 4:if (dir == 0) {
+            if (r < breathing_val - 1){ r+=2;g+=2;}
+            else {r++;g++;}
+            }
+                if(r == breathing_val) dir = 1;
+                if (dir == 1) {
+                        if (r >1){r-=2;g-=2;}
+                else {r--;g--;}
+                        if(r == 0) {dir = 0;i=5;}
+                    }break;
+        case 5:if (dir == 0) {
+                if(g < breathing_val -1 ) {g+=2;b+=2;}
+                else{g++;b++;}
+            }
+                if(g == breathing_val) dir = 1;
+                if (dir == 1) {
+                        if (g >1) {g-=2;b-=2;}
+                else {g--;b--;}
+                        if(g == 0) {dir = 0;i=6;}
+                    }break;
+        case 6:if (dir == 0) {
+                if (g <breathing_val -1) {g+=2;b+=2;r+=2;}
+                else {g++;r++;b++;}
+            }
+                if(g == breathing_val) dir = 1;
+                if (dir == 1) {
+                        if (g > 1) {g-=2;b-=2;r-=2;}
+                else {g--;r--;b--;}
+                        if(g == 0) {dir = 0;i=0;}
+                    }break;
+        }
+        for(uint8_t j = 0;j< RGBLED_NUM;j++)
+            rgblight_setrgb_at(r,g,b,j);
+    }
+    #else
+    void rgblight_effect_breathing(animation_status_t *anim) {
+        uint8_t val = breathe_calc(anim->pos);
+        rgblight_sethsv_noeeprom_old(rgblight_config.hue, rgblight_config.sat, val);
+        anim->pos = (anim->pos + 1);
+    }
+    #endif
 #endif
 
 #ifdef RGBLIGHT_EFFECT_RAINBOW_MOOD
 __attribute__((weak)) const uint8_t RGBLED_RAINBOW_MOOD_INTERVALS[] PROGMEM = {120, 60, 30};
 
-void rgblight_effect_rainbow_mood(animation_status_t *anim) {
-    rgblight_sethsv_noeeprom_old(anim->current_hue, rgblight_config.sat, rgblight_config.val);
-    anim->current_hue++;
-}
+    #ifdef CUSTOM_RGBLIGHT_EFFECT_RAINBOW_MOOD
+    void rgblight_effect_rainbow_mood(animation_status_t *anim) {
+        static uint8_t i = 0,r = rainbow_mood,g = 0,b = 0;
+        if (rgblight_config.enable) {
+    //      LED_TYPE tmp_led;
+    //	setrgb(r, g, b,&tmp_led);
+    //	rgblight_setrgb_master(tmp_led.r* (rgblight_config.val/255), tmp_led.g*(rgblight_config.val/255), tmp_led.b*(rgblight_config.val/255));
+        for(uint8_t j = 0;j< RGBLED_NUM;j++)
+            rgblight_setrgb_at(r,g,b,j);
+
+        if (i == 0) {if (g<rainbow_mood - 1){r-=2;g+=2;} else {r--;g++;} if (g == rainbow_mood) i = 1;}
+        if (i == 1) {if (b<rainbow_mood - 1){g-=2;b+=2;} else {g--;b++;} if (b == rainbow_mood) i = 2;}
+        if (i == 2) {if (r<rainbow_mood - 1){b-=2;r+=2;} else {b--;r++;} if (r == rainbow_mood) i = 0;}
+    //	dprintf("r = %d g = %d b = %d\r\n",r,g,b);
+        // dprintf("hue = %d sat = %d val = %d\r\n",rgblight_config.hue,rgblight_config.sat,rgblight_config.val);
+
+        }
+    
+    }
+    #else
+    void rgblight_effect_rainbow_mood(animation_status_t *anim) {
+        rgblight_sethsv_noeeprom_old(anim->current_hue, rgblight_config.sat, rgblight_config.val);
+        anim->current_hue++;
+    }
+    #endif
 #endif
 
 #ifdef RGBLIGHT_EFFECT_RAINBOW_SWIRL
@@ -1215,23 +1322,47 @@ void rgblight_effect_rainbow_mood(animation_status_t *anim) {
 #    endif
 
 __attribute__((weak)) const uint8_t RGBLED_RAINBOW_SWIRL_INTERVALS[] PROGMEM = {100, 50, 20};
+    #ifdef CUSTOM_RGBLIGHT_EFFECT_RAINBOW_SWIRL
+    void rgblight_effect_rainbow_swirl(animation_status_t *anim) {
+        uint8_t hue;
+        uint8_t i;
 
-void rgblight_effect_rainbow_swirl(animation_status_t *anim) {
-    uint8_t hue;
-    uint8_t i;
+        for (i = 0; i < rgblight_ranges.effect_num_leds/2; i++) {
+            hue = (RGBLIGHT_RAINBOW_SWIRL_RANGE / rgblight_ranges.effect_num_leds * i + anim->current_hue);
+            sethsv(hue, rgblight_config.sat, rgblight_config.val, (LED_TYPE *)&led[i + rgblight_ranges.effect_start_pos]);
+            sethsv(hue, rgblight_config.sat, rgblight_config.val, (LED_TYPE *)&led[rgblight_ranges.effect_num_leds-1-i + rgblight_ranges.effect_start_pos]);
+        }
+        rgblight_set();
 
-    for (i = 0; i < rgblight_ranges.effect_num_leds; i++) {
-        hue = (RGBLIGHT_RAINBOW_SWIRL_RANGE / rgblight_ranges.effect_num_leds * i + anim->current_hue);
-        sethsv(hue, rgblight_config.sat, rgblight_config.val, (rgb_led_t *)&led[i + rgblight_ranges.effect_start_pos]);
+        if (anim->delta % 2) {
+            anim->current_hue++;
+            anim->current_hue++;
+            anim->current_hue++;
+        } else {
+            anim->current_hue--;
+            anim->current_hue--;
+            anim->current_hue--;
+        }
+
     }
-    rgblight_set();
+    #else
+    void rgblight_effect_rainbow_swirl(animation_status_t *anim) {
+        uint8_t hue;
+        uint8_t i;
 
-    if (anim->delta % 2) {
-        anim->current_hue++;
-    } else {
-        anim->current_hue--;
+        for (i = 0; i < rgblight_ranges.effect_num_leds; i++) {
+            hue = (RGBLIGHT_RAINBOW_SWIRL_RANGE / rgblight_ranges.effect_num_leds * i + anim->current_hue);
+            sethsv(hue, rgblight_config.sat, rgblight_config.val, (rgb_led_t *)&led[i + rgblight_ranges.effect_start_pos]);
+        }
+        rgblight_set();
+
+        if (anim->delta % 2) {
+            anim->current_hue++;
+        } else {
+            anim->current_hue--;
+        }
     }
-}
+    #endif
 #endif
 
 #ifdef RGBLIGHT_EFFECT_SNAKE
