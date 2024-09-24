@@ -4,6 +4,7 @@
 #include QMK_KEYBOARD_H
 #include "rgb_record/rgb_record.h"
 #include "rgb_record/rgb_rgblight.h"
+
 typedef union {
     uint32_t raw;
     struct {
@@ -49,7 +50,9 @@ uint32_t bat_indicator_cnt = true;
 static uint32_t ee_clr_timer = 0;
 static uint32_t rec_time;
 static bool rec_filp;
+bool test_white_light_flag = false;
 bool no_record_fg;
+
 void eeconfig_confinfo_update(uint32_t raw) {
 
     eeconfig_update_kb(raw);
@@ -93,7 +96,6 @@ void keyboard_post_init_kb(void) {
 
     gpio_set_pin_output(D2);
     gpio_write_pin_high(D2);
-
 #endif
 
 #ifdef USB_POWER_EN_PIN
@@ -109,7 +111,7 @@ void keyboard_post_init_kb(void) {
 
     rgbrec_init(confinfo.record_channel);
 }
-bool test_white_light_flag = false;
+
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     
     if (test_white_light_flag && record->event.pressed) {
@@ -139,7 +141,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             if (rgbrec_is_started()){
                 if (!IS_QK_MOMENTARY(keycode) && record->event.pressed) {
                     rgbrec_register_record(keycode,record);
-                    
+
                     return false;
                 } 
             }
@@ -472,6 +474,7 @@ void nkr_indicators_hook(uint8_t index) {
        rgb_matrix_hs_indicator_set(0xFF, (RGB){0x00,0x00,0x6F}, 250, 1);
     }
 }
+
 void rgb_matrix_hs_indicator_set(uint8_t index, RGB rgb, uint32_t interval, uint8_t times) {
     
     for (int i = 0; i < HS_RGB_INDICATOR_COUNT; i++) {
@@ -488,6 +491,7 @@ void rgb_matrix_hs_indicator_set(uint8_t index, RGB rgb, uint32_t interval, uint
         }
     }
 }
+
 void rgb_matrix_hs_set_remain_time(uint8_t index,uint8_t remain_time){
     
     for (int i = 0; i < HS_RGB_INDICATOR_COUNT; i++){
@@ -498,6 +502,7 @@ void rgb_matrix_hs_set_remain_time(uint8_t index,uint8_t remain_time){
         }
     }
 }
+
 void rgb_matrix_hs_indicator(void) {
     
     for (int i = 0; i < HS_RGB_INDICATOR_COUNT; i++) {
@@ -536,6 +541,7 @@ void rgb_matrix_hs_indicator(void) {
         }
     }
 }
+
 void rgb_matrix_start_rec(void){
     
     if (rgbrec_is_started()){
@@ -560,6 +566,7 @@ void rgb_matrix_start_rec(void){
     }
     
 }
+
 bool rgb_matrix_indicators_advanced_kb(uint8_t led_min, uint8_t led_max) {
     
     if (test_white_light_flag) {

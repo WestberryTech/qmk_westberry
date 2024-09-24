@@ -1,15 +1,14 @@
 // Copyright 2024 yangzheng20003 (@yangzheng20003)
 // SPDX-License-Identifier: GPL-2.0-or-later
 
-
 #include "rgb_record.h"
 #include "rgb_matrix.h"
 #include "eeprom.h"
 
 #define RGBREC_STATE_ON 1
 #define RGBREC_STATE_OFF 0
-
 #define RGBREC_COLOR_NUM (sizeof(rgbrec_hs_lists) / sizeof(rgbrec_hs_lists[0]))
+
 typedef struct {
     uint8_t state;
     uint8_t channel;
@@ -45,6 +44,7 @@ static rgbrec_info_t rgbrec_info = {
 
 static uint8_t rgbrec_buffer[MATRIX_ROWS * MATRIX_COLS * 2];
 extern const uint16_t PROGMEM rgbrec_default_effects[RGBREC_CHANNEL_NUM][MATRIX_ROWS][MATRIX_COLS];
+
 static bool find_matrix_row_col(uint8_t index, uint8_t *row, uint8_t *col) {
     uint8_t i, j;
 
@@ -121,6 +121,7 @@ bool rgbrec_start(uint8_t channel) {
 
     return false;
 }
+
 void rgbrec_update_current_channel(uint8_t channel) {
     uint32_t addr = 0;
 
@@ -131,6 +132,7 @@ void rgbrec_update_current_channel(uint8_t channel) {
     addr = (uint32_t)(RGBREC_EECONFIG_ADDR) + (channel * sizeof(rgbrec_buffer));
     eeprom_update_block(rgbrec_buffer, (void *)addr, sizeof(rgbrec_buffer));
 }
+
 bool rgbrec_end(uint8_t channel) {
 
     if (channel >= RGBREC_CHANNEL_NUM) {
@@ -183,6 +185,7 @@ void rgbrec_set_close_all(uint8_t h, uint8_t s, uint8_t v) {
         }
     }
 }
+
 void rgbrec_read_current_channel(uint8_t channel) {
     uint32_t addr = 0;
 
@@ -237,6 +240,7 @@ void eeconfig_init_user_datablock(void) {
     addr = (uint32_t)(RGBREC_EECONFIG_ADDR);
     eeprom_update_block(rgbrec_default_effects, (void *)addr, sizeof(rgbrec_default_effects));
 }
+
 uint8_t find_index(void){
     
     for (uint8_t index = 0; index < (sizeof(rgbmatrix_buff) / sizeof(rgbmatrix_buff[0])); index++) {
@@ -248,6 +252,7 @@ uint8_t find_index(void){
 
     return 0;
 }
+
 void record_rgbmatrix_increase(uint8_t* last_mode) {
     uint8_t index;
     

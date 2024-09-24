@@ -31,6 +31,7 @@ void rgblight_set(void) {
     start_led = led0 + rgblight_ranges.clipping_start_pos;
     rgblight_call_driver(start_led, num_leds);
 }
+
 bool rgb_matrix_indicators_advanced_rgblight(uint8_t led_min, uint8_t led_max) {
 
     for (uint8_t i = 0; i < RGBLED_NUM; i++) {
