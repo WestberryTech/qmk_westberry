@@ -31,12 +31,12 @@
 
 #ifdef RGBLIGHT_SPLIT
 /* for split keyboard */
-#    define RGBLIGHT_SPLIT_SET_CHANGE_MODE rgblight_status.change_flags |= RGBLIGHT_STATUS_CHANGE_MODE
-#    define RGBLIGHT_SPLIT_SET_CHANGE_HSVS rgblight_status.change_flags |= RGBLIGHT_STATUS_CHANGE_HSVS
-#    define RGBLIGHT_SPLIT_SET_CHANGE_MODEHSVS rgblight_status.change_flags |= (RGBLIGHT_STATUS_CHANGE_MODE | RGBLIGHT_STATUS_CHANGE_HSVS)
-#    define RGBLIGHT_SPLIT_SET_CHANGE_LAYERS rgblight_status.change_flags |= RGBLIGHT_STATUS_CHANGE_LAYERS
+#    define RGBLIGHT_SPLIT_SET_CHANGE_MODE         rgblight_status.change_flags |= RGBLIGHT_STATUS_CHANGE_MODE
+#    define RGBLIGHT_SPLIT_SET_CHANGE_HSVS         rgblight_status.change_flags |= RGBLIGHT_STATUS_CHANGE_HSVS
+#    define RGBLIGHT_SPLIT_SET_CHANGE_MODEHSVS     rgblight_status.change_flags |= (RGBLIGHT_STATUS_CHANGE_MODE | RGBLIGHT_STATUS_CHANGE_HSVS)
+#    define RGBLIGHT_SPLIT_SET_CHANGE_LAYERS       rgblight_status.change_flags |= RGBLIGHT_STATUS_CHANGE_LAYERS
 #    define RGBLIGHT_SPLIT_SET_CHANGE_TIMER_ENABLE rgblight_status.change_flags |= RGBLIGHT_STATUS_CHANGE_TIMER
-#    define RGBLIGHT_SPLIT_ANIMATION_TICK rgblight_status.change_flags |= RGBLIGHT_STATUS_ANIMATION_TICK
+#    define RGBLIGHT_SPLIT_ANIMATION_TICK          rgblight_status.change_flags |= RGBLIGHT_STATUS_ANIMATION_TICK
 #else
 #    define RGBLIGHT_SPLIT_SET_CHANGE_MODE
 #    define RGBLIGHT_SPLIT_SET_CHANGE_HSVS
@@ -56,11 +56,11 @@ static uint8_t static_effect_table[] = {
 #include "rgblight_modes.h"
 };
 
-#define _RGBM_SINGLE_STATIC(sym) RGBLIGHT_MODE_##sym,
-#define _RGBM_SINGLE_DYNAMIC(sym) RGBLIGHT_MODE_##sym,
-#define _RGBM_MULTI_STATIC(sym) RGBLIGHT_MODE_##sym,
-#define _RGBM_MULTI_DYNAMIC(sym) RGBLIGHT_MODE_##sym,
-#define _RGBM_TMP_STATIC(sym, msym) RGBLIGHT_MODE_##msym,
+#define _RGBM_SINGLE_STATIC(sym)     RGBLIGHT_MODE_##sym,
+#define _RGBM_SINGLE_DYNAMIC(sym)    RGBLIGHT_MODE_##sym,
+#define _RGBM_MULTI_STATIC(sym)      RGBLIGHT_MODE_##sym,
+#define _RGBM_MULTI_DYNAMIC(sym)     RGBLIGHT_MODE_##sym,
+#define _RGBM_TMP_STATIC(sym, msym)  RGBLIGHT_MODE_##msym,
 #define _RGBM_TMP_DYNAMIC(sym, msym) RGBLIGHT_MODE_##msym,
 static uint8_t mode_base_table[] = {
     0, // RGBLIGHT_MODE_zero

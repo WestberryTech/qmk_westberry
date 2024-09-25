@@ -5,7 +5,7 @@
 #include "rgb_matrix.h"
 #include "eeprom.h"
 
-#define RGBREC_STATE_ON 1
+#define RGBREC_STATE_ON  1
 #define RGBREC_STATE_OFF 0
 #define RGBREC_COLOR_NUM (sizeof(rgbrec_hs_lists) / sizeof(rgbrec_hs_lists[0]))
 
