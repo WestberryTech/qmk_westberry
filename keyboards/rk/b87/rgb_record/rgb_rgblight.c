@@ -2,11 +2,7 @@
 #include "rgblight.h"
 LED_TYPE led[RGBLED_NUM];
 extern rgblight_config_t rgblight_config;
-
-//clang-format off
-const uint8_t led_map[] = {0,1,2,3,4,5,6,7};
-
-//clang-format on
+const uint8_t led_map[] = {0, 1, 2, 3, 4, 5, 6, 7};
 
 void rgblight_call_driver(LED_TYPE *start_led, uint8_t num_leds) {
 

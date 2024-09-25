@@ -156,10 +156,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     return true;
 }
 
-//clang-format off
 uint8_t buff[] = {14, 8, 2, 1, 1, 1, 1, 1, 1, 1, 0};
 
-//clang-format on
 void im_rgblight_increase(void) {
     HSV rgb;
     uint8_t moude;

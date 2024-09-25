@@ -104,8 +104,8 @@ __attribute__((weak)) const uint8_t RGBLED_GRADIENT_RANGES[] PROGMEM = {255, 170
 #endif
 
 rgblight_config_t rgblight_config;
-rgblight_status_t rgblight_status         = {.timer_enabled = false};
-bool              is_rgblight_initialized = false;
+rgblight_status_t rgblight_status = {.timer_enabled = false};
+bool is_rgblight_initialized      = false;
 
 #ifdef RGBLIGHT_SLEEP
 static bool is_suspended;
@@ -564,8 +564,8 @@ void rgblight_sethsv_eeprom_helper(uint8_t hue, uint8_t sat, uint8_t val, bool w
 #ifdef RGBLIGHT_EFFECT_STATIC_GRADIENT
             else if (rgblight_status.base_mode == RGBLIGHT_MODE_STATIC_GRADIENT) {
                 // static gradient
-                uint8_t delta     = rgblight_config.mode - rgblight_status.base_mode;
-                bool    direction = (delta % 2) == 0;
+                uint8_t delta  = rgblight_config.mode - rgblight_status.base_mode;
+                bool direction = (delta % 2) == 0;
 
                 uint8_t range = pgm_read_byte(&RGBLED_GRADIENT_RANGES[delta / 2]);
                 for (uint8_t i = 0; i < rgblight_ranges.effect_num_leds; i++) {
@@ -691,7 +691,7 @@ static uint8_t get_interval_time(const uint8_t *default_interval_address, uint8_
 #    ifdef VELOCIKEY_ENABLE
         rgblight_velocikey_enabled() ? rgblight_velocikey_match_speed(velocikey_min, velocikey_max) :
 #    endif
-                                     pgm_read_byte(default_interval_address);
+                                       pgm_read_byte(default_interval_address);
 }
 
 #endif
@@ -801,9 +801,9 @@ static void rgblight_layers_write(void) {
 
 #    ifdef RGBLIGHT_LAYER_BLINK
 rgblight_layer_mask_t _blinking_layer_mask = 0;
-static uint16_t       _repeat_timer;
-static uint8_t        _times_remaining;
-static uint16_t       _dur;
+static uint16_t _repeat_timer;
+static uint8_t _times_remaining;
+static uint16_t _dur;
 
 void rgblight_blink_layer(uint8_t layer, uint16_t duration_ms) {
     rgblight_blink_layer_repeat(layer, duration_ms, 1);
@@ -901,46 +901,46 @@ void rgblight_wakeup(void) {
 
 void rgblight_set(void) {
     rgb_led_t *start_led;
-    uint8_t    num_leds = rgblight_ranges.clipping_num_leds;
+    uint8_t num_leds = rgblight_ranges.clipping_num_leds;
 
     if (!rgblight_config.enable) {
         for (uint8_t i = rgblight_ranges.effect_start_pos; i < rgblight_ranges.effect_end_pos; i++) {
             led[i].r = 0;
             led[i].g = 0;
             led[i].b = 0;
-#ifdef WS2812_RGBW
+#    ifdef WS2812_RGBW
             led[i].w = 0;
-#endif
+#    endif
         }
     }
 
-#ifdef RGBLIGHT_LAYERS
+#    ifdef RGBLIGHT_LAYERS
     if (rgblight_layers != NULL
-#    if !defined(RGBLIGHT_LAYERS_OVERRIDE_RGB_OFF)
+#        if !defined(RGBLIGHT_LAYERS_OVERRIDE_RGB_OFF)
         && rgblight_config.enable
-#    elif defined(RGBLIGHT_SLEEP)
+#        elif defined(RGBLIGHT_SLEEP)
         && !is_suspended
-#    endif
+#        endif
     ) {
         rgblight_layers_write();
     }
-#endif
+#    endif
 
-#ifdef RGBLIGHT_LED_MAP
+#    ifdef RGBLIGHT_LED_MAP
     rgb_led_t led0[RGBLIGHT_LED_COUNT];
     for (uint8_t i = 0; i < RGBLIGHT_LED_COUNT; i++) {
         led0[i] = led[pgm_read_byte(&led_map[i])];
     }
     start_led = led0 + rgblight_ranges.clipping_start_pos;
-#else
+#    else
     start_led = led + rgblight_ranges.clipping_start_pos;
-#endif
+#    endif
 
-#ifdef WS2812_RGBW
+#    ifdef WS2812_RGBW
     for (uint8_t i = 0; i < num_leds; i++) {
         convert_rgb_to_rgbw(&start_led[i]);
     }
-#endif
+#    endif
     rgblight_driver.setleds(start_led, num_leds);
 }
 
@@ -1048,10 +1048,10 @@ static void rgblight_effect_dummy(animation_status_t *anim) {
 
 void rgblight_timer_task(void) {
     if (rgblight_status.timer_enabled) {
-        effect_func_t effect_func   = rgblight_effect_dummy;
-        uint16_t      interval_time = 2000; // dummy interval
-        uint8_t       delta         = rgblight_config.mode - rgblight_status.base_mode;
-        animation_status.delta      = delta;
+        effect_func_t effect_func = rgblight_effect_dummy;
+        uint16_t interval_time    = 2000; // dummy interval
+        uint8_t delta             = rgblight_config.mode - rgblight_status.base_mode;
+        animation_status.delta    = delta;
 
         // static light mode, do nothing here
         if (1 == 0) { // dummy
@@ -1126,8 +1126,8 @@ void rgblight_timer_task(void) {
         if (timer_expired(now, animation_status.last_timer)) {
 #    if defined(RGBLIGHT_SPLIT) && !defined(RGBLIGHT_SPLIT_NO_ANIMATION_SYNC)
             static uint16_t report_last_timer = 0;
-            static bool     tick_flag         = false;
-            uint16_t        oldpos16;
+            static bool tick_flag             = false;
+            uint16_t oldpos16;
             if (tick_flag) {
                 tick_flag = false;
                 if (timer_expired(now, report_last_timer)) {
@@ -1198,122 +1198,240 @@ static uint8_t breathe_calc(uint8_t pos) {
 
 __attribute__((weak)) const uint8_t RGBLED_BREATHING_INTERVALS[] PROGMEM = {30, 20, 10, 5};
 
-    #ifdef CUSTOM_RGBLIGHT_EFFECT_BREATHE_TABLE
-    void rgblight_effect_breathing(animation_status_t *anim) {
-    static uint8_t i,r,g,b,dir; 
-        switch(i){
-        case 0:if (dir == 0) {
-            if (r < breathing_val -1) r+=2;
-            else r++;
+#    ifdef CUSTOM_RGBLIGHT_EFFECT_BREATHE_TABLE
+void rgblight_effect_breathing(animation_status_t *anim) {
+    static uint8_t i, r, g, b, dir;
+    switch (i) {
+        case 0: {
+            if (dir == 0) {
+                if (r < breathing_val - 1)
+                    r += 2;
+                else
+                    r++;
             }
-                if(r == breathing_val) dir = 1;
-                if (dir == 1) {
-                        if (r>1) r-=2;
-                else r--;
-                        if(r == 0) {dir = 0;i=1;}
-                    }break;
-        case 1:if (dir == 0){ 
-                if(g <breathing_val - 1) g+=2;
-            else g++;
+            if (r == breathing_val) dir = 1;
+            if (dir == 1) {
+                if (r > 1)
+                    r -= 2;
+                else
+                    r--;
+                if (r == 0) {
+                    dir = 0;
+                    i   = 1;
+                }
             }
-                if(g == breathing_val) dir = 1;
-                if (dir == 1) {
-                        if (g>1) g-=2;
-                        else g--;
-                        if(g == 0) {dir = 0;i=2;}
-                }break;
-        case 2:if (dir == 0){
-                if (b < breathing_val - 1) b+=2;
-                    else b++;
+        } break;
+        case 1: {
+            if (dir == 0) {
+                if (g < breathing_val - 1)
+                    g += 2;
+                else
+                    g++;
             }
-                if(b == breathing_val) dir = 1;
-                if (dir == 1) {
-                        if (b>1) b-=2;
-                        else b--;
+            if (g == breathing_val) dir = 1;
+            if (dir == 1) {
+                if (g > 1)
+                    g -= 2;
+                else
+                    g--;
+                if (g == 0) {
+                    dir = 0;
+                    i   = 2;
+                }
+            }
+        } break;
+        case 2: {
+            if (dir == 0) {
+                if (b < breathing_val - 1)
+                    b += 2;
+                else
+                    b++;
+            }
+            if (b == breathing_val) dir = 1;
+            if (dir == 1) {
+                if (b > 1)
+                    b -= 2;
+                else
+                    b--;
 
-                if(b == 0) {dir = 0;i=3;}
-                    }break;
-        case 3:if (dir == 0) {
-            if (r <breathing_val - 1)  {r+=2;b+=2;}
-            else {r++;b++;}
+                if (b == 0) {
+                    dir = 0;
+                    i   = 3;
+                }
             }
-                if(r == breathing_val) dir = 1;
-                if (dir == 1) {
-                        if (r>1) {r-=2;b-=2;}
-                else {r--;b--;}
-                        if(r == 0) {dir = 0;i=4;}
-                    }break;
-        case 4:if (dir == 0) {
-            if (r < breathing_val - 1){ r+=2;g+=2;}
-            else {r++;g++;}
+        } break;
+        case 3: {
+            if (dir == 0) {
+                if (r < breathing_val - 1) {
+                    r += 2;
+                    b += 2;
+                } else {
+                    r++;
+                    b++;
+                }
             }
-                if(r == breathing_val) dir = 1;
-                if (dir == 1) {
-                        if (r >1){r-=2;g-=2;}
-                else {r--;g--;}
-                        if(r == 0) {dir = 0;i=5;}
-                    }break;
-        case 5:if (dir == 0) {
-                if(g < breathing_val -1 ) {g+=2;b+=2;}
-                else{g++;b++;}
+            if (r == breathing_val) dir = 1;
+            if (dir == 1) {
+                if (r > 1) {
+                    r -= 2;
+                    b -= 2;
+                } else {
+                    r--;
+                    b--;
+                }
+                if (r == 0) {
+                    dir = 0;
+                    i   = 4;
+                }
             }
-                if(g == breathing_val) dir = 1;
-                if (dir == 1) {
-                        if (g >1) {g-=2;b-=2;}
-                else {g--;b--;}
-                        if(g == 0) {dir = 0;i=6;}
-                    }break;
-        case 6:if (dir == 0) {
-                if (g <breathing_val -1) {g+=2;b+=2;r+=2;}
-                else {g++;r++;b++;}
+        } break;
+        case 4: {
+            if (dir == 0) {
+                if (r < breathing_val - 1) {
+                    r += 2;
+                    g += 2;
+                } else {
+                    r++;
+                    g++;
+                }
             }
-                if(g == breathing_val) dir = 1;
-                if (dir == 1) {
-                        if (g > 1) {g-=2;b-=2;r-=2;}
-                else {g--;r--;b--;}
-                        if(g == 0) {dir = 0;i=0;}
-                    }break;
-        }
-        for(uint8_t j = 0;j< RGBLED_NUM;j++)
-            rgblight_setrgb_at(r,g,b,j);
+            if (r == breathing_val) dir = 1;
+            if (dir == 1) {
+                if (r > 1) {
+                    r -= 2;
+                    g -= 2;
+                } else {
+                    r--;
+                    g--;
+                }
+                if (r == 0) {
+                    dir = 0;
+                    i   = 5;
+                }
+            }
+        } break;
+        case 5: {
+            if (dir == 0) {
+                if (g < breathing_val - 1) {
+                    g += 2;
+                    b += 2;
+                } else {
+                    g++;
+                    b++;
+                }
+            }
+            if (g == breathing_val) dir = 1;
+            if (dir == 1) {
+                if (g > 1) {
+                    g -= 2;
+                    b -= 2;
+                } else {
+                    g--;
+                    b--;
+                }
+                if (g == 0) {
+                    dir = 0;
+                    i   = 6;
+                }
+            }
+        } break;
+        case 6: {
+            if (dir == 0) {
+                if (g < breathing_val - 1) {
+                    g += 2;
+                    b += 2;
+                    r += 2;
+                } else {
+                    g++;
+                    r++;
+                    b++;
+                }
+            }
+            if (g == breathing_val) dir = 1;
+            if (dir == 1) {
+                if (g > 1) {
+                    g -= 2;
+                    b -= 2;
+                    r -= 2;
+                } else {
+                    g--;
+                    r--;
+                    b--;
+                }
+                if (g == 0) {
+                    dir = 0;
+                    i   = 0;
+                }
+            }
+        } break;
+        default:
+            break;
     }
-    #else
-    void rgblight_effect_breathing(animation_status_t *anim) {
-        uint8_t val = breathe_calc(anim->pos);
-        rgblight_sethsv_noeeprom_old(rgblight_config.hue, rgblight_config.sat, val);
-        anim->pos = (anim->pos + 1);
-    }
-    #endif
+    for (uint8_t j = 0; j < RGBLED_NUM; j++)
+        rgblight_setrgb_at(r, g, b, j);
+}
+#    else
+void rgblight_effect_breathing(animation_status_t *anim) {
+    uint8_t val = breathe_calc(anim->pos);
+    rgblight_sethsv_noeeprom_old(rgblight_config.hue, rgblight_config.sat, val);
+    anim->pos = (anim->pos + 1);
+}
+#    endif
 #endif
 
 #ifdef RGBLIGHT_EFFECT_RAINBOW_MOOD
 __attribute__((weak)) const uint8_t RGBLED_RAINBOW_MOOD_INTERVALS[] PROGMEM = {120, 60, 30};
 
-    #ifdef CUSTOM_RGBLIGHT_EFFECT_RAINBOW_MOOD
-    void rgblight_effect_rainbow_mood(animation_status_t *anim) {
-        static uint8_t i = 0,r = rainbow_mood,g = 0,b = 0;
-        if (rgblight_config.enable) {
-    //      LED_TYPE tmp_led;
-    //	setrgb(r, g, b,&tmp_led);
-    //	rgblight_setrgb_master(tmp_led.r* (rgblight_config.val/255), tmp_led.g*(rgblight_config.val/255), tmp_led.b*(rgblight_config.val/255));
-        for(uint8_t j = 0;j< RGBLED_NUM;j++)
-            rgblight_setrgb_at(r,g,b,j);
+#    ifdef CUSTOM_RGBLIGHT_EFFECT_RAINBOW_MOOD
+void rgblight_effect_rainbow_mood(animation_status_t *anim) {
+    static uint8_t i = 0, r = rainbow_mood, g = 0, b = 0;
+    if (rgblight_config.enable) {
+        //      LED_TYPE tmp_led;
+        //	setrgb(r, g, b,&tmp_led);
+        //	rgblight_setrgb_master(tmp_led.r* (rgblight_config.val/255), tmp_led.g*(rgblight_config.val/255), tmp_led.b*(rgblight_config.val/255));
+        for (uint8_t j = 0; j < RGBLED_NUM; j++)
+            rgblight_setrgb_at(r, g, b, j);
 
-        if (i == 0) {if (g<rainbow_mood - 1){r-=2;g+=2;} else {r--;g++;} if (g == rainbow_mood) i = 1;}
-        if (i == 1) {if (b<rainbow_mood - 1){g-=2;b+=2;} else {g--;b++;} if (b == rainbow_mood) i = 2;}
-        if (i == 2) {if (r<rainbow_mood - 1){b-=2;r+=2;} else {b--;r++;} if (r == rainbow_mood) i = 0;}
-    //	dprintf("r = %d g = %d b = %d\r\n",r,g,b);
-        // dprintf("hue = %d sat = %d val = %d\r\n",rgblight_config.hue,rgblight_config.sat,rgblight_config.val);
-
+        if (i == 0) {
+            if (g < rainbow_mood - 1) {
+                r -= 2;
+                g += 2;
+            } else {
+                r--;
+                g++;
+            }
+            if (g == rainbow_mood) i = 1;
         }
-    
+        if (i == 1) {
+            if (b < rainbow_mood - 1) {
+                g -= 2;
+                b += 2;
+            } else {
+                g--;
+                b++;
+            }
+            if (b == rainbow_mood) i = 2;
+        }
+        if (i == 2) {
+            if (r < rainbow_mood - 1) {
+                b -= 2;
+                r += 2;
+            } else {
+                b--;
+                r++;
+            }
+            if (r == rainbow_mood) i = 0;
+        }
+        //	dprintf("r = %d g = %d b = %d\r\n",r,g,b);
+        // dprintf("hue = %d sat = %d val = %d\r\n",rgblight_config.hue,rgblight_config.sat,rgblight_config.val);
     }
-    #else
-    void rgblight_effect_rainbow_mood(animation_status_t *anim) {
-        rgblight_sethsv_noeeprom_old(anim->current_hue, rgblight_config.sat, rgblight_config.val);
-        anim->current_hue++;
-    }
-    #endif
+}
+#    else
+void rgblight_effect_rainbow_mood(animation_status_t *anim) {
+    rgblight_sethsv_noeeprom_old(anim->current_hue, rgblight_config.sat, rgblight_config.val);
+    anim->current_hue++;
+}
+#    endif
 #endif
 
 #ifdef RGBLIGHT_EFFECT_RAINBOW_SWIRL
@@ -1322,47 +1440,46 @@ __attribute__((weak)) const uint8_t RGBLED_RAINBOW_MOOD_INTERVALS[] PROGMEM = {1
 #    endif
 
 __attribute__((weak)) const uint8_t RGBLED_RAINBOW_SWIRL_INTERVALS[] PROGMEM = {100, 50, 20};
-    #ifdef CUSTOM_RGBLIGHT_EFFECT_RAINBOW_SWIRL
-    void rgblight_effect_rainbow_swirl(animation_status_t *anim) {
-        uint8_t hue;
-        uint8_t i;
+#    ifdef CUSTOM_RGBLIGHT_EFFECT_RAINBOW_SWIRL
+void rgblight_effect_rainbow_swirl(animation_status_t *anim) {
+    uint8_t hue;
+    uint8_t i;
 
-        for (i = 0; i < rgblight_ranges.effect_num_leds/2; i++) {
-            hue = (RGBLIGHT_RAINBOW_SWIRL_RANGE / rgblight_ranges.effect_num_leds * i + anim->current_hue);
-            sethsv(hue, rgblight_config.sat, rgblight_config.val, (LED_TYPE *)&led[i + rgblight_ranges.effect_start_pos]);
-            sethsv(hue, rgblight_config.sat, rgblight_config.val, (LED_TYPE *)&led[rgblight_ranges.effect_num_leds-1-i + rgblight_ranges.effect_start_pos]);
-        }
-        rgblight_set();
-
-        if (anim->delta % 2) {
-            anim->current_hue++;
-            anim->current_hue++;
-            anim->current_hue++;
-        } else {
-            anim->current_hue--;
-            anim->current_hue--;
-            anim->current_hue--;
-        }
-
+    for (i = 0; i < rgblight_ranges.effect_num_leds / 2; i++) {
+        hue = (RGBLIGHT_RAINBOW_SWIRL_RANGE / rgblight_ranges.effect_num_leds * i + anim->current_hue);
+        sethsv(hue, rgblight_config.sat, rgblight_config.val, (LED_TYPE *)&led[i + rgblight_ranges.effect_start_pos]);
+        sethsv(hue, rgblight_config.sat, rgblight_config.val, (LED_TYPE *)&led[rgblight_ranges.effect_num_leds - 1 - i + rgblight_ranges.effect_start_pos]);
     }
-    #else
-    void rgblight_effect_rainbow_swirl(animation_status_t *anim) {
-        uint8_t hue;
-        uint8_t i;
+    rgblight_set();
 
-        for (i = 0; i < rgblight_ranges.effect_num_leds; i++) {
-            hue = (RGBLIGHT_RAINBOW_SWIRL_RANGE / rgblight_ranges.effect_num_leds * i + anim->current_hue);
-            sethsv(hue, rgblight_config.sat, rgblight_config.val, (rgb_led_t *)&led[i + rgblight_ranges.effect_start_pos]);
-        }
-        rgblight_set();
-
-        if (anim->delta % 2) {
-            anim->current_hue++;
-        } else {
-            anim->current_hue--;
-        }
+    if (anim->delta % 2) {
+        anim->current_hue++;
+        anim->current_hue++;
+        anim->current_hue++;
+    } else {
+        anim->current_hue--;
+        anim->current_hue--;
+        anim->current_hue--;
     }
-    #endif
+}
+#    else
+void rgblight_effect_rainbow_swirl(animation_status_t *anim) {
+    uint8_t hue;
+    uint8_t i;
+
+    for (i = 0; i < rgblight_ranges.effect_num_leds; i++) {
+        hue = (RGBLIGHT_RAINBOW_SWIRL_RANGE / rgblight_ranges.effect_num_leds * i + anim->current_hue);
+        sethsv(hue, rgblight_config.sat, rgblight_config.val, (rgb_led_t *)&led[i + rgblight_ranges.effect_start_pos]);
+    }
+    rgblight_set();
+
+    if (anim->delta % 2) {
+        anim->current_hue++;
+    } else {
+        anim->current_hue--;
+    }
+}
+#    endif
 #endif
 
 #ifdef RGBLIGHT_EFFECT_SNAKE
@@ -1370,9 +1487,9 @@ __attribute__((weak)) const uint8_t RGBLED_SNAKE_INTERVALS[] PROGMEM = {100, 50,
 
 void rgblight_effect_snake(animation_status_t *anim) {
     static uint8_t pos = 0;
-    uint8_t        i, j;
-    int8_t         k;
-    int8_t         increment = 1;
+    uint8_t i, j;
+    int8_t k;
+    int8_t increment = 1;
 
     if (anim->delta % 2) {
         increment = -1;
@@ -1439,7 +1556,7 @@ void rgblight_effect_knight(animation_status_t *anim) {
     static int8_t low_bound  = 0;
     static int8_t high_bound = RGBLIGHT_EFFECT_KNIGHT_LENGTH - 1;
     static int8_t increment  = RGBLIGHT_EFFECT_KNIGHT_INCREMENT;
-    uint8_t       i, cur;
+    uint8_t i, cur;
 
 #    if defined(RGBLIGHT_SPLIT) && !defined(RGBLIGHT_SPLIT_NO_ANIMATION_SYNC)
     if (anim->pos == 0) { // restart signal
@@ -1503,8 +1620,8 @@ void rgblight_effect_christmas(animation_status_t *anim) {
     const uint8_t hue_green = 85;
 
     uint32_t xa;
-    uint8_t  hue, val;
-    uint8_t  i;
+    uint8_t hue, val;
+    uint8_t i;
 
     // The effect works by animating anim->pos from 0 to 32 and back to 0.
     // The pos is used in a cubic bezier formula to ease-in-out between red and green, leaving the interpolated colors visible as short as possible.
@@ -1533,9 +1650,9 @@ __attribute__((weak)) const uint16_t RGBLED_RGBTEST_INTERVALS[] PROGMEM = {1024}
 
 void rgblight_effect_rgbtest(animation_status_t *anim) {
     static uint8_t maxval = 0;
-    uint8_t        g;
-    uint8_t        r;
-    uint8_t        b;
+    uint8_t g;
+    uint8_t r;
+    uint8_t b;
 
     if (maxval == 0) {
         rgb_led_t tmp_led;
@@ -1580,7 +1697,7 @@ void rgblight_effect_alternating(animation_status_t *anim) {
 __attribute__((weak)) const uint8_t RGBLED_TWINKLE_INTERVALS[] PROGMEM = {30, 15, 5};
 
 typedef struct PACKED {
-    HSV     hsv;
+    HSV hsv;
     uint8_t life;
     uint8_t max_life;
 } TwinkleState;
@@ -1606,7 +1723,7 @@ void rgblight_effect_twinkle(animation_status_t *anim) {
 
     for (uint8_t i = 0; i < rgblight_ranges.effect_num_leds; i++) {
         TwinkleState *t = &(led_twinkle_state[i]);
-        HSV *         c = &(t->hsv);
+        HSV *c          = &(t->hsv);
 
         if (!random_color) {
             c->h = rgblight_config.hue;
