@@ -289,6 +289,7 @@ void record_color_hsv(bool status) {
             temp = RGB_HSV_MAX;
         }
     }
+
     if (status) rgb_hsv_index = (rgb_hsv_index + 1) % temp;
 
     rgb_matrix_sethsv(rgb_hsvs[rgb_hsv_index][0], rgb_hsvs[rgb_hsv_index][1], rgb_matrix_get_val());

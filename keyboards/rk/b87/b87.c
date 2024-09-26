@@ -52,6 +52,7 @@ static uint32_t rec_time;
 static bool rec_filp;
 bool test_white_light_flag = false;
 bool no_record_fg;
+uint8_t buff[] = {14, 8, 2, 1, 1, 1, 1, 1, 1, 1, 0};
 
 void eeconfig_confinfo_update(uint32_t raw) {
 
@@ -70,6 +71,7 @@ void eeconfig_confinfo_default(void) {
     confinfo.record_last_mode = 0xff;
     eeconfig_init_user_datablock();
     eeconfig_confinfo_update(confinfo.raw);
+    rgblight_mode(buff[0]);
 }
 
 void eeconfig_confinfo_init(void) {
@@ -155,8 +157,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
     return true;
 }
-
-uint8_t buff[] = {14, 8, 2, 1, 1, 1, 1, 1, 1, 1, 0};
 
 void im_rgblight_increase(void) {
     HSV rgb;
@@ -636,6 +636,5 @@ void hs_reset_settings(void) {
 
         return;
     }
-
     keyboard_post_init_kb();
 }

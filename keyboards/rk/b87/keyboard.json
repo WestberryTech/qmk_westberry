@@ -212,8 +212,28 @@
         "val_steps": 38,
         "speed_steps": 51,
         "default": {
+            "animation": "cycle_left_right",
             "val" :114,
             "speed" :204
+        },
+        "sleep": true
+    },
+    "rgblight": {
+        "animations": {
+            "alternatin":true,
+            "breathing": true,
+            "christmas":true,
+            "knight":true,
+            "rainbow_mood": true,
+            "rainbow_swirl": true,
+            "rgb_test": true,
+            "snake": true,
+            "static_gradient": true,
+            "twinkle": true
+        },
+        "default": {
+            "animation": "rainbow_swirl",
+            "val": 60
         },
         "sleep": true
     },
