@@ -1,3 +1,6 @@
+// Copyright 2024 yangzheng20003 (@yangzheng20003)
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 #include "rgb_effect.h"
 
 void rgblight_effect_breathing(animation_status_t *anim) {

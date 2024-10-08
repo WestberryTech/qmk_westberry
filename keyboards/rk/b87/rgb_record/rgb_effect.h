@@ -1,3 +1,6 @@
+// Copyright 2024 yangzheng20003 (@yangzheng20003)
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 #include "rgblight.h"
 
 #define RGBLIGHT_RAINBOW_SWIRL_RANGE 255

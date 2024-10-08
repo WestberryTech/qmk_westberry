@@ -1,3 +1,6 @@
+// Copyright 2024 yangzheng20003 (@yangzheng20003)
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 #include "rgb_rgblight.h"
 #include "rgblight.h"
 LED_TYPE led[RGBLED_NUM];

@@ -900,7 +900,7 @@ void rgblight_wakeup(void) {
 
 void rgblight_set(void) {
     rgb_led_t *start_led;
-    uint8_t num_leds = rgblight_ranges.clipping_num_leds;
+    uint8_t    num_leds = rgblight_ranges.clipping_num_leds;
 
     if (!rgblight_config.enable) {
         for (uint8_t i = rgblight_ranges.effect_start_pos; i < rgblight_ranges.effect_end_pos; i++) {
@@ -1226,8 +1226,7 @@ void rgblight_effect_rainbow_swirl(animation_status_t *anim) {
     uint8_t hue;
     uint8_t i;
 
-    if (rgblight_effect_custom_rainbow_swirl(anim) != true){
-    
+    if (rgblight_effect_custom_rainbow_swirl(anim) != true) {
         return;
     }
    
